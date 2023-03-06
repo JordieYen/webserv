@@ -3,5 +3,6 @@
 
 # include <stdio.h>
 
+# include "Networking/ftlibc-networking.hpp"
 
 #endif
