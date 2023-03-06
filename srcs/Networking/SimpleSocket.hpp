@@ -19,11 +19,13 @@ namespace ft
 			int					get_sock(void);
 			int					get_connection(void);
 			struct sockaddr_in	get_address(void);
+			
+			void				set_connection(int);
 	
 		private:
-			int					sock;
-			int					connection;
-			struct sockaddr_in	address;
+			int					_sock;
+			int					_connection;
+			struct sockaddr_in	_address;
 
 	};
 }

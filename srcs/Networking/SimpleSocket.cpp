@@ -4,13 +4,11 @@ namespace ft
 {
 	SimpleSocket::SimpleSocket(int domain, int service, int protocol, int port, u_long interface)
 	{
-		this->address.sin_family = domain;
-		this->address.sin_port = htons(port);
-		this->address.sin_addr.s_addr = htonl(interface);
-		this->sock = socket(domain, service, protocol);
-		this->test_connection(sock);
-		this->connection = this->connect_to_network(this->sock, this->address);
-		this->test_connection(connection);
+		this->_address.sin_family = domain;
+		this->_address.sin_port = htons(port);
+		this->_address.sin_addr.s_addr = htonl(interface);
+		this->_sock = socket(domain, service, protocol);
+		this->test_connection(this->_sock);
 	}
 
 	void	SimpleSocket::test_connection(int item_to_test)
@@ -24,16 +22,21 @@ namespace ft
 
 	int	SimpleSocket::get_sock(void)
 	{
-		return (this->sock);
+		return (this->_sock);
 	}
 
 	int	SimpleSocket::get_connection(void)
 	{
-		return (this->connection);
+		return (this->_connection);
 	}
 
 	struct sockaddr_in	SimpleSocket::get_address(void)
 	{
-		return (this->address);
+		return (this->_address);
+	}
+
+	void	SimpleSocket::set_connection(int connection)
+	{
+		this->_connection = connection;
 	}
 }
