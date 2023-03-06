@@ -12,6 +12,11 @@ namespace	ft
 			BindingSocket(int domain, int service, int protocol, int port, u_long interface);
 
 			int	connect_to_network(int sock, struct sockaddr_in address);
+
+			int	get_binding(void);
+
+		private:
+			int	_binding;
 	};
 }
 

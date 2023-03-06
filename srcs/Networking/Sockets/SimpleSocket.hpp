@@ -17,14 +17,12 @@ namespace ft
 			void		test_connection(int);
 
 			int					get_sock(void);
-			int					get_connection(void);
 			struct sockaddr_in	get_address(void);
 			
 			void				set_connection(int);
 	
 		private:
 			int					_sock;
-			int					_connection;
 			struct sockaddr_in	_address;
 
 	};

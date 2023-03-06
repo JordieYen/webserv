@@ -25,18 +25,8 @@ namespace ft
 		return (this->_sock);
 	}
 
-	int	SimpleSocket::get_connection(void)
-	{
-		return (this->_connection);
-	}
-
 	struct sockaddr_in	SimpleSocket::get_address(void)
 	{
 		return (this->_address);
-	}
-
-	void	SimpleSocket::set_connection(int connection)
-	{
-		this->_connection = connection;
 	}
 }
