@@ -9,6 +9,8 @@ namespace ft
 		test_connection(this->_listening);
 	}
 
+	ListeningSocket::~ListeningSocket() {}
+
 	void	ListeningSocket::start_listening(void)
 	{
 		this->_listening = listen(this->get_sock(), this->_backlog);

@@ -8,6 +8,8 @@ namespace	ft
 		this->test_connection(this->_binding);
 	}
 
+	BindingSocket::~BindingSocket() {}
+
 	int	BindingSocket::connect_to_network(int sock, sockaddr_in address)
 	{
 		return (bind(sock, (struct sockaddr *)&address, sizeof(address)));

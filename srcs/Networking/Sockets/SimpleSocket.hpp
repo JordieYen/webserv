@@ -2,6 +2,7 @@
 # define SIMPLESOCKET_HPP
 
 # include <stdio.h>
+# include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <iostream>
@@ -12,6 +13,7 @@ namespace ft
 	{
 		public:
 			SimpleSocket(int domain, int service, int protocol, int port, u_long interface);
+			virtual	~SimpleSocket();
 
 			virtual int	connect_to_network(int sock, struct sockaddr_in address) = 0;
 			void		test_connection(int);

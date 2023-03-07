@@ -2,7 +2,9 @@
 # define SIMPLESERVER_HPP
 
 # include <stdio.h>
-# include "../ftlibc-networking.hpp"
+# include <unistd.h>
+# include <sys/types.h>
+# include "../Sockets/Sockets.hpp"
 
 namespace	ft
 {
@@ -12,16 +14,19 @@ namespace	ft
 			SimpleServer(int domain, int service, int protocol, int port, u_long interface, int backlog);
 			~SimpleServer();
 
-			virtual void	launch(void) = 0;
-
 			ListeningSocket	*get_socket(void);
 
+			void	launch(void);
+
 		private:
-			virtual void	accepter(void) = 0;
-			virtual void	handler(void) = 0;
-			virtual void	responder(void) = 0;
+			void	accepter(void);
+			void	handler(void);
+			void	responder(void);
 
 			ListeningSocket	*_socket;
+			std::string		_content;
+			char			*_buffer;
+			int				_new_socket;
 	};
 }
 

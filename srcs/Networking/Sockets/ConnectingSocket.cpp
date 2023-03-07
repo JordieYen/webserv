@@ -8,6 +8,8 @@ namespace	ft
 		this->test_connection(this->_connecting);
 	}
 
+	ConnectingSocket::~ConnectingSocket() {}
+
 	int	ConnectingSocket::connect_to_network(int sock, sockaddr_in address)
 	{
 		return (connect(sock, (struct sockaddr *)&address, sizeof(address)));

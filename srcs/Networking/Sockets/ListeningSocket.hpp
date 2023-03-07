@@ -10,6 +10,7 @@ namespace ft
 	{
 		public:
 			ListeningSocket(int domain, int service, int protocol, int port, u_long interface, int backlog);
+			~ListeningSocket();
 
 			void	start_listening(void);
 			

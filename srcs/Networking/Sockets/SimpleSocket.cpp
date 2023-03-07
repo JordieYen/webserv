@@ -11,6 +11,8 @@ namespace ft
 		this->test_connection(this->_sock);
 	}
 
+	SimpleSocket::~SimpleSocket() {}
+
 	void	SimpleSocket::test_connection(int item_to_test)
 	{
 		if (item_to_test < 0)
