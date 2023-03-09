@@ -7,6 +7,7 @@
 # include <fstream>
 # include <vector>
 # include "../../Networking/Servers/ServerConfig.hpp"
+# include "ErrorChecker.hpp"
 
 using std::string;
 using std::ifstream;
@@ -34,6 +35,7 @@ namespace	ft
 		private:
 			lineType				split_line(string line);
 
+			ErrorChecker			_error_checker;
 			string					_config_path;
 			vector<configType>		_server_configs;
 			vector<ServerConfig>	_parsed_server_configs;

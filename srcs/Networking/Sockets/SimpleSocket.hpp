@@ -1,6 +1,8 @@
 #ifndef SIMPLESOCKET_HPP
 # define SIMPLESOCKET_HPP
 
+# include <cstdlib>
+
 # include <stdio.h>
 # include <sys/types.h>
 # include <sys/socket.h>

@@ -16,7 +16,13 @@ namespace ft
 			throw ErrorChecker::InvalidConfigException("Error : server not found");
 		for (std::vector<std::vector<std::string> >::iterator line = block_to_check.begin(); line != block_to_check.end(); line++)
 		{
-			this->check_line(line, &open_curl_count, &close_curl_count);
+			if (!(*line).empty())
+			{
+				this->check_line(line, &open_curl_count, &close_curl_count);
+				if ((*line).size() < 2  && (*line).front() != "}")
+					throw ErrorChecker::InvalidConfigException("Error : missing value for key ");
+				this->check_key(line);
+			}
 		}
 		if (open_curl_count != close_curl_count)
 		{
@@ -25,6 +31,37 @@ namespace ft
 			else
 				throw ErrorChecker::InvalidConfigException("Error : missing '{' ");
 		}
+	}
+
+	void	ErrorChecker::check_key(config_type::iterator& line)
+	{
+		const char							*key_checks[] = {"server", "listen", "server_name", "autoindex", "access_log", "root", "index", "return" , "location", "}"};
+		std::vector<std::string>			checks(key_checks, key_checks + 10);
+		bool								is_valid = false;
+		static bool							is_location_block;
+		
+		for (std::vector<std::string>::iterator check = checks.begin(); check != checks.end(); check++)
+		{
+			if (is_location_block == true && (*line).front() == "}")
+				is_location_block = false;
+			if (is_location_block == true)
+			{
+				this->check_location_key(line);
+				is_valid = true;
+				break;
+			}
+			if ((*line).front() == *check)
+			{
+				is_valid = true;
+				if (*check == "server")
+					this->check_server_count();
+				else if (*check == "location")
+					is_location_block = true;
+				break;
+			}
+		}
+		if (is_valid == false)
+			throw ErrorChecker::InvalidConfigException("Error : '" + (*line).front() + "' is an invalid key ");
 	}
 
 	void	ErrorChecker::check_line(config_type::iterator& line, size_t* open_curl_count, size_t* close_curl_count)
@@ -62,10 +99,56 @@ namespace ft
 		error.append("' invalid position");
 		if (*check == '{' && ((*token != "{" || &(*token) != &((*line).back())) || &(*line).back() == &(*line).front()))
 			throw ErrorChecker::InvalidConfigException(error);
+		else if (*token == "{")
+			this->check_open_curly_bracket(line);
 		if (*check == '}' && (&(*line).back() != &(*line).front() || *token != "}"))
 			throw ErrorChecker::InvalidConfigException(error);
 		if (*check == ';' && (&(*token) != &((*line).back()) || *((*token).end() - 1) != ';'))
 			throw ErrorChecker::InvalidConfigException(error);
 	}
 
+	void	ErrorChecker::check_open_curly_bracket(config_type::iterator& line)
+	{
+		const char							*key_checks[] = {"server", "location"};
+		std::vector<std::string>			checks(key_checks, key_checks + 2);
+		bool								is_valid = false;
+
+		for (std::vector<std::string>::iterator check = checks.begin(); check != checks.end(); check++)
+		{
+			if ((*line).front() == *check)
+			{
+				is_valid = true;
+				break;
+			}
+		}
+		if (is_valid == false)
+			throw ErrorChecker::InvalidConfigException("Error : '" + (*line).front() + "' is an invalid key for start of block");
+	}
+
+	void	ErrorChecker::check_location_key(config_type::iterator& line)
+	{
+		const char							*key_checks[] = {"root", "proxy_pass", "expires"};
+		std::vector<std::string>			checks(key_checks, key_checks + 3);
+		bool								is_valid = false;
+
+		for (std::vector<std::string>::iterator check = checks.begin(); check != checks.end(); check++)
+		{
+			if ((*line).front() == *check)
+			{
+				is_valid = true;
+				break;
+			}
+		}
+		if (is_valid == false)
+			throw ErrorChecker::InvalidConfigException("Error : '" + (*line).front() + "' is an invalid key for location block");
+	}
+
+	void	ErrorChecker::check_server_count(void)
+	{
+		static size_t	server_count;
+
+		server_count++;
+		if (server_count > 1)
+			throw ErrorChecker::InvalidConfigException("Error: Invalid Syntax, server cannot be key in server block");
+	}
 }

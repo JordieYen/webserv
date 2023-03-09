@@ -17,21 +17,21 @@ int	main(int argc, char **argv)
 		parser.read_config();
 		std::vector<std::vector<std::vector<std::string> > >	config_string = parser.get_server_configs();
 
-		for (std::vector<std::vector<std::vector<std::string> > >::iterator up_it = config_string.begin(); up_it != config_string.end(); up_it++)
-		{
-			std::cout << "ServerConfig: \n";
-			for (std::vector<std::vector<std::string> >::iterator it = (*up_it).begin(); it != (*up_it).end(); it++)
-			{
-				std::cout << "Token:";
-				for (std::vector<std::string>::iterator it2 = it->begin(); it2 != it->end(); it2++)
-				{
-					std::cout << " [" << *it2 << "]";
-				}
-				std::cout << std::endl;
-			}
-			std::cout << std::endl;
-		}
-		// parser.parse_config();
+		// for (std::vector<std::vector<std::vector<std::string> > >::iterator up_it = config_string.begin(); up_it != config_string.end(); up_it++)
+		// {
+		// 	std::cout << "ServerConfig: \n";
+		// 	for (std::vector<std::vector<std::string> >::iterator it = (*up_it).begin(); it != (*up_it).end(); it++)
+		// 	{
+		// 		std::cout << "Token:";
+		// 		for (std::vector<std::string>::iterator it2 = it->begin(); it2 != it->end(); it2++)
+		// 		{
+		// 			std::cout << " [" << *it2 << "]";
+		// 		}
+		// 		std::cout << std::endl;
+		// 	}
+		// 	std::cout << std::endl;
+		// }
+		parser.parse_config();
 	}
 	else
 		std::cout << "This will parse the default configuration file" << std::endl;

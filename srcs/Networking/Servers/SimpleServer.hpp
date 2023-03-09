@@ -1,6 +1,8 @@
 #ifndef SIMPLESERVER_HPP
 # define SIMPLESERVER_HPP
 
+# include <cstdlib>
+
 # include <stdio.h>
 # include <unistd.h>
 # include <sys/types.h>

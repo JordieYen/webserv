@@ -23,6 +23,15 @@ namespace ft
 
 			void	check_server(config_type block_to_check);
 
+		private:
+			void	check_server_count(void);
+			void	check_location_key(config_type::iterator& line);
+			void	check_open_curly_bracket(config_type::iterator& line);
+			void	check_key(config_type::iterator& line);
+			void	check_line(config_type::iterator& line, size_t* open_curl_count, size_t* close_curl_count);
+			void	check_token(line_type::iterator token, config_type::iterator& line, std::vector<char>::iterator& check);
+
+		public:
 			class InvalidConfigException: public std::exception
 			{
 				public:
@@ -40,12 +49,6 @@ namespace ft
 				private:
 					std::string	_error;
 			};
-
-		private:
-			void	check_line(config_type::iterator& line, size_t* open_curl_count, size_t* close_curl_count);
-			void	check_token(line_type::iterator token, config_type::iterator& line, std::vector<char>::iterator& check);
-
-			// bool	_is_valid;
 	};
 }
 

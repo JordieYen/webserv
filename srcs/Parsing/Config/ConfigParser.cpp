@@ -42,7 +42,7 @@ namespace	ft
 	void	ConfigParser::read_config()
 	{
 		string		line;
-		ifstream	config_file(this->_config_path);
+		ifstream	config_file(this->_config_path.c_str());
 		lineType	current_line;
 		configType	current_config;
 
@@ -73,17 +73,18 @@ namespace	ft
 		for (vector<configType>::iterator config = this->_server_configs.begin(); config != this->_server_configs.end(); config++)
 		{
 			try {
-				// call checker
+				this->_error_checker.check_server(*config);
 			}
-			catch () {
+			catch (ErrorChecker::InvalidConfigException & e) {
 				std::cout << e.what() << std::endl;
-				//exit();
+				exit(2);
 			}
 		}
 	}
 
 	void	ConfigParser::parse_config(void)
 	{
+		this->check_config();
 		for (vector<configType>::iterator config = this->_server_configs.begin(); config != this->_server_configs.end(); config++)
 		{
 			ServerConfig	new_config;
@@ -100,7 +101,7 @@ namespace	ft
 				// 	new_config.set_location_directive(path, new_location);
 				// }
 				// else
-					new_config.set_normal_directive(line->front(), vector(line->begin() + 1, line->end()));
+					new_config.set_normal_directive(line->front(), ServerConfig::normalValueType(line->begin() + 1, line->end()));
 			}
 		}
 	}

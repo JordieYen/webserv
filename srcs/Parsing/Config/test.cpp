@@ -32,43 +32,35 @@ namespace ft
 	}
 }
 
-// int	main(int argc, char** argv)
-// {
-// 	int				fd;
-// 	std::string		myText;
+int	main(int argc, char** argv)
+{
+	int				fd;
+	std::string		myText;
 
-// 	if (argc == 2)
-// 	{
-// 		char buffer[10000];
-// 		fd = open(argv[1], O_RDONLY);
-// 		read(fd, buffer, 10000);
-// 		myText = buffer;
+	if (argc == 2)
+	{
+		char buffer[10000];
+		fd = open(argv[1], O_RDONLY);
+		read(fd, buffer, 10000);
+		myText = buffer;
 
-// 		std::vector<std::string>	lines;
+		std::vector<std::string>	lines;
 
-// 		std::string::size_type pos = 0;
-// 		std::string::size_type prev = 0;
-// 		while ((pos = myText.find('\n', prev)) != std::string::npos) {
-// 			lines.push_back(myText.substr(prev, pos - prev));
-// 			prev = pos + 1;
-// 		}
-// 		lines.push_back(myText.substr(prev));
+		std::string::size_type pos = 0;
+		std::string::size_type prev = 0;
+		while ((pos = myText.find('\n', prev)) != std::string::npos) {
+			lines.push_back(myText.substr(prev, pos - prev));
+			prev = pos + 1;
+		}
+		lines.push_back(myText.substr(prev));
 
-// 		std::vector<std::vector<std::string> >	temp;
+		std::vector<std::vector<std::string> >	temp;
 
-// 		for (std::vector<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
-// 		{
-// 			temp.push_back(ft::split(*line));
-// 		}
+		for (std::vector<std::string>::iterator line = lines.begin(); line != lines.end(); line++)
+		{
+			temp.push_back(ft::split(*line));
+		}
 
-<<<<<<< HEAD
-// 		ft::ErrorChecker	lol(temp);
-// 	}
-// 	else
-// 		std::cout << "nothing ran..." << std::endl;
-// 	return (0);
-// }
-=======
 		ft::ErrorChecker	lol;
 
 		try
@@ -85,4 +77,3 @@ namespace ft
 		std::cout << "nothing ran..." << std::endl;
 	return (0);
 }
->>>>>>> 3e87c48d15b860dc2580bba513519e9df5e12f8d
