@@ -72,10 +72,12 @@ namespace	ft
 	{
 		for (vector<configType>::iterator config = this->_server_configs.begin(); config != this->_server_configs.end(); config++)
 		{
-			try {
+			try 
+			{
 				this->_error_checker.check_server(*config);
 			}
-			catch (ErrorChecker::InvalidConfigException & e) {
+			catch (ErrorChecker::InvalidConfigException & e) 
+			{
 				std::cout << e.what() << std::endl;
 				exit(2);
 			}
