@@ -5,5 +5,6 @@
 # include <iostream>
 
 # include "Networking/Networking.hpp"
+# include "Parsing/Parsing.hpp"
 
 #endif

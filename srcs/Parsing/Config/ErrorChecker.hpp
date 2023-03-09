@@ -25,7 +25,7 @@ namespace ft
 			void	check_line(config_type::iterator& line, size_t* open_curl_count, size_t* close_curl_count);
 			void	check_token(line_type::iterator token, config_type::iterator& line, std::vector<char>::iterator& check);
 
-			bool	_is_valid;
+			// bool	_is_valid;
 	};
 }
 
