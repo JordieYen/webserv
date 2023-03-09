@@ -18,14 +18,32 @@ namespace ft
 			typedef	std::vector<value_type>		line_type;
 			typedef	std::vector<line_type>			config_type;
 
-			ErrorChecker(config_type block_to_check);
+			ErrorChecker(void);
 			~ErrorChecker(void);
+
+			void	check_server(config_type block_to_check);
+
+			class InvalidConfigException: public std::exception
+			{
+				public:
+					InvalidConfigException(std::string	error_message)
+					{
+						this->_error = error_message;
+					}
+
+					~InvalidConfigException() throw() {}
+
+					virtual const char* what() const throw() // understand better
+					{
+						return (this->_error.c_str());
+					}
+				private:
+					std::string	_error;
+			};
 
 		private:
 			void	check_line(config_type::iterator& line, size_t* open_curl_count, size_t* close_curl_count);
 			void	check_token(line_type::iterator token, config_type::iterator& line, std::vector<char>::iterator& check);
-
-			bool	_is_valid;
 	};
 }
 

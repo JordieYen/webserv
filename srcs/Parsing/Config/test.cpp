@@ -61,7 +61,17 @@ int	main(int argc, char** argv)
 			temp.push_back(ft::split(*line));
 		}
 
-		ft::ErrorChecker	lol(temp);
+		ft::ErrorChecker	lol;
+
+		try
+		{
+			lol.check_server(temp);
+		}
+		catch (ft::ErrorChecker::InvalidConfigException & e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+		
 	}
 	else
 		std::cout << "nothing ran..." << std::endl;
