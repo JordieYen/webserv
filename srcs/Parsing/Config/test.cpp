@@ -61,9 +61,28 @@ namespace ft
 // 			temp.push_back(ft::split(*line));
 // 		}
 
+<<<<<<< HEAD
 // 		ft::ErrorChecker	lol(temp);
 // 	}
 // 	else
 // 		std::cout << "nothing ran..." << std::endl;
 // 	return (0);
 // }
+=======
+		ft::ErrorChecker	lol;
+
+		try
+		{
+			lol.check_server(temp);
+		}
+		catch (ft::ErrorChecker::InvalidConfigException & e)
+		{
+			std::cout << e.what() << std::endl;
+		}
+		
+	}
+	else
+		std::cout << "nothing ran..." << std::endl;
+	return (0);
+}
+>>>>>>> 3e87c48d15b860dc2580bba513519e9df5e12f8d
