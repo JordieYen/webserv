@@ -9,12 +9,14 @@ namespace ft
 
 	void	ErrorChecker::check_server(config_type block_to_check)
 	{
-		size_t				open_curl_count = 0;
+		size_t				open_curl_count = 1;
 		size_t				close_curl_count = 0;
 
-		if (block_to_check[0].front() != "server" || block_to_check[0].size() != 2)
-			throw ErrorChecker::InvalidConfigException("Error : server not found");
-		for (std::vector<std::vector<std::string> >::iterator line = block_to_check.begin(); line != block_to_check.end(); line++)
+		if (block_to_check.size() < 3)
+			throw ErrorChecker::InvalidConfigException("Error : invalid syntax ");
+		if (block_to_check.front().front() != "server" || block_to_check.front().back() != "{" || block_to_check.front().size() != 2)
+			throw ErrorChecker::InvalidConfigException("Error : server not found ");
+		for (std::vector<std::vector<std::string> >::iterator line = block_to_check.begin() + 1; line != block_to_check.end(); line++)
 		{
 			if (!(*line).empty())
 			{
@@ -35,8 +37,8 @@ namespace ft
 
 	void	ErrorChecker::check_key(config_type::iterator& line)
 	{
-		const char							*key_checks[] = {"server", "listen", "server_name", "autoindex", "access_log", "root", "index", "return" , "location", "}"};
-		std::vector<std::string>			checks(key_checks, key_checks + 10);
+		const char							*key_checks[] = {"listen", "server_name", "autoindex", "access_log", "root", "index", "return", "location", "}"};
+		std::vector<std::string>			checks(key_checks, key_checks + 9);
 		bool								is_valid = false;
 		static bool							is_location_block;
 		
@@ -53,10 +55,12 @@ namespace ft
 			if ((*line).front() == *check)
 			{
 				is_valid = true;
-				if (*check == "server")
-					this->check_server_count();
-				else if (*check == "location")
+				if (*check == "location")
+				{
 					is_location_block = true;
+					if (line->size() < 3 || (line + 1)->front() == "}")
+						throw ErrorChecker::InvalidConfigException("Error : invalid location block syntax ");
+				}
 				break;
 			}
 		}
@@ -109,8 +113,8 @@ namespace ft
 
 	void	ErrorChecker::check_open_curly_bracket(config_type::iterator& line)
 	{
-		const char							*key_checks[] = {"server", "location"};
-		std::vector<std::string>			checks(key_checks, key_checks + 2);
+		const char							*key_checks[] = {"location"};
+		std::vector<std::string>			checks(key_checks, key_checks + 1);
 		bool								is_valid = false;
 
 		for (std::vector<std::string>::iterator check = checks.begin(); check != checks.end(); check++)
@@ -141,14 +145,5 @@ namespace ft
 		}
 		if (is_valid == false)
 			throw ErrorChecker::InvalidConfigException("Error : '" + (*line).front() + "' is an invalid key for location block");
-	}
-
-	void	ErrorChecker::check_server_count(void)
-	{
-		static size_t	server_count;
-
-		server_count++;
-		if (server_count > 1)
-			throw ErrorChecker::InvalidConfigException("Error: Invalid Syntax, server cannot be key in server block");
 	}
 }

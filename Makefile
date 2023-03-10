@@ -21,11 +21,11 @@ $(NAME):	$(OBJS_FILES)
 %.o:	%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
-test:	re
+test:	$(OBJS_FILES)
 	@./$(NAME) $(ARG)
 
-sanitize:	fclean
-	(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES) $(FSAN)
+sanitize:	fclean $(OBJS_FILES)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES) $(FSAN)
 	@./$(NAME) $(ARG)
 
 clean:

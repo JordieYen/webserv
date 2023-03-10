@@ -45,15 +45,20 @@ namespace	ft
 		ifstream	config_file(this->_config_path.c_str());
 		lineType	current_line;
 		configType	current_config;
+		int			curl_count = 0;
 
 		if (config_file.is_open())
 		{
 			while (getline(config_file, line))
 			{
+				if (line.find("#") != string::npos)
+					line = line.substr(0, line.find("#"));
 				current_line = split_line(line);
 				if (!current_line.empty())
 				{
-					if (!current_config.empty() && current_line.front() == "server")
+					curl_count += (line.find("{") != string::npos);
+					curl_count -= (line.find("}") != string::npos);
+					if (!current_config.empty() && current_line.front() == "server" && curl_count == 1)
 					{
 						this->_server_configs.push_back(current_config);
 						current_config.clear();
@@ -86,25 +91,37 @@ namespace	ft
 
 	void	ConfigParser::parse_config(void)
 	{
-		this->check_config();
 		for (vector<configType>::iterator config = this->_server_configs.begin(); config != this->_server_configs.end(); config++)
 		{
 			ServerConfig	new_config;
-			// bool			is_location;
 
 			for (configType::iterator line = config->begin() + 1; line != config->end(); line++)
 			{
-				// if (line->front() == "location")
-				// {
-				// 	LocationBlock	new_location(line->at(1) == "=");
-				// 	string			path = line->at(1 + (line->at(1) == "="));
+				if (line->front() == "location")
+				{
+					LocationBlock	new_location(line->at(1) == "=");
+					string			path = line->at(1 + (line->at(1) == "="));
 
-					
-				// 	new_config.set_location_directive(path, new_location);
-				// }
-				// else
+					while ((++line)->front() != "}")
+					{
+						if (line->back() == ";")
+							line->pop_back();
+						else
+							line->back().pop_back();
+						new_location.set_directive(line->front(), LocationBlock::valueType(line->begin() + 1, line->end()));
+					}
+					new_config.set_location_directive(path, new_location);
+				}
+				else
+				{
+					if (line->back() == ";")
+						line->pop_back();
+					else
+						line->back().pop_back();
 					new_config.set_normal_directive(line->front(), ServerConfig::normalValueType(line->begin() + 1, line->end()));
+				}
 			}
+			this->_parsed_server_configs.push_back(new_config);
 		}
 	}
 }
