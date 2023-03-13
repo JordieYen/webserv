@@ -14,8 +14,8 @@ namespace	ft
 	class WebServer
 	{
 		public:
-			typedef std::map<int, SimpleServer>	serverMapType;
-			typedef std::vector<int>			fdArrayType;
+			typedef std::map<int, SimpleServer*>	serverMapType;
+			typedef std::vector<int>				fdArrayType;
 
 			WebServer(void);
 			WebServer(std::string config_path);

@@ -16,7 +16,6 @@ namespace ft
 	{
 		public:
 			SimpleSocket(int domain, int service, int protocol, int port, u_long interface);
-			SimpleSocket(const SimpleSocket &simplesocket_clone);
 			virtual	~SimpleSocket();
 
 			virtual int	connect_to_network(int sock, struct sockaddr_in address) = 0;

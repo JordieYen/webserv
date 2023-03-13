@@ -12,7 +12,13 @@ namespace ft
 		this->setup();
 	}
 
-	WebServer::~WebServer(void) {}
+	WebServer::~WebServer(void)
+	{
+		for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
+		{
+			delete server->second;
+		}
+	}
 
 	void	WebServer::setup(void)
 	{
@@ -24,29 +30,24 @@ namespace ft
 
 		for (std::vector<ft::ServerConfig>::iterator it = configs.begin(); it != configs.end(); it++)
 		{
-			std::cout << "START CREATE: " << std::endl;
-			SimpleServer	new_server(*it);
-			std::pair<int, SimpleServer>	unfunnypair(new_server.get_port(), new_server);
-			std::cout << "POST UNFUNNYPAIR CREATION: " << std::endl;
-			std::cout << "SOCKET_ADDR BEFORE INSERT: " << unfunnypair.second.get_socket() << std::endl;
-			std::cout << "SOCKET_FD BEFORE INSERT: " << unfunnypair.second.get_server_fd() << std::endl;
-			this->_servers.insert(unfunnypair);
-			std::cout << "SOCKET_ADDR AFTER INSERT: " << this->_servers.at(81).get_socket() << std::endl;
-			std::cout << "SOCKET_FD AFTER INSERT: " << this->_servers.at(81).get_server_fd() << std::endl;
-			std::cout << "END CREATE: " << std::endl;
+			SimpleServer	*new_server = new SimpleServer(*it);
+
+			this->_servers.insert(std::make_pair(new_server->get_port(), new_server));
 		}
 	}
 
 	void	WebServer::launch(void)
 	{
+		int	i = 0;
 		while (true)
 		{
 			for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
 			{
-				server->second.accepter();
-				// server->second.handler();
-				server->second.responder();
+				server->second->accepter();
+				server->second->handler();
+				server->second->responder();
 			}
+			i++;
 		}
 	}
 }

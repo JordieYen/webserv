@@ -2,6 +2,7 @@
 # define SIMPLESERVER_HPP
 
 # include <cstdlib>
+# include <fstream>
 # include <sstream>
 # include <stdio.h>
 # include <unistd.h>

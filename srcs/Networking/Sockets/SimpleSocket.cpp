@@ -11,15 +11,6 @@ namespace ft
 		this->test_connection(this->_sock);
 	}
 
-	SimpleSocket::SimpleSocket(const SimpleSocket &simplesocket_clone)
-	{
-		this->_address = simplesocket_clone._address;
-		// this->_address.sin_family = simplesocket_clone._address.sin_family;
-		// this->_address.sin_port = simplesocket_clone._address.sin_port;
-		// this->_address.sin_addr.s_addr = simplesocket_clone._address.sin_addr.s_addr;
-		this->_sock = simplesocket_clone._sock;
-	}
-
 	SimpleSocket::~SimpleSocket()
 	{
 		close(this->_sock);
