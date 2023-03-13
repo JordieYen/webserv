@@ -107,7 +107,7 @@ namespace	ft
 						if (line->back() == ";")
 							line->pop_back();
 						else
-							line->back().pop_back();
+							line->back() = line->back().substr(0, line->back().length() - 1);
 						new_location.set_directive(line->front(), LocationBlock::valueType(line->begin() + 1, line->end()));
 					}
 					new_config.set_location_directive(path, new_location);
@@ -117,7 +117,7 @@ namespace	ft
 					if (line->back() == ";")
 						line->pop_back();
 					else
-						line->back().pop_back();
+						line->back() = line->back().substr(0, line->back().length() - 1);
 					new_config.set_normal_directive(line->front(), ServerConfig::normalValueType(line->begin() + 1, line->end()));
 				}
 			}
