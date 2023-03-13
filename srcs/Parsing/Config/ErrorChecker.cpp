@@ -21,7 +21,7 @@ namespace ft
 			if (!(*line).empty())
 			{
 				this->check_line(line, &open_curl_count, &close_curl_count);
-				if (((*line).size() < 2  && (*line).front() != "}") || ((*line).size() < 3 && (*line).back() == ";"))
+				if (((*line).size() < 2 && (*line).front() != "}") || ((*line).size() < 3 && (*line).back() == ";"))
 					throw ErrorChecker::InvalidConfigException("Error : missing value for key ");
 				this->check_key(line);
 			}

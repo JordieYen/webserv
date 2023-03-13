@@ -22,9 +22,10 @@ $(NAME):	$(OBJS_FILES)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test:	$(OBJS_FILES)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES)
 	@./$(NAME) $(ARG)
 
-sanitize:	fclean $(OBJS_FILES)
+sanitize:	$(OBJS_FILES)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES) $(FSAN)
 	@./$(NAME) $(ARG)
 

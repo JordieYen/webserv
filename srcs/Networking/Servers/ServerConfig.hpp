@@ -44,11 +44,11 @@ namespace	ft
 			ServerConfig();
 			ServerConfig	&operator = (const ServerConfig &server_config_var);
 
-			void					set_normal_directive(keyType key, normalValueType value);
-			const normalValueType	&get_normal_directive(keyType key) const;
+			void							set_normal_directive(keyType key, normalValueType value);
+			const normalValueType			&get_normal_directive(keyType key) const;
 
-			void					set_location_directive(keyType key, locationValueType value);
-			const locationValueType	&get_location_directive(keyType key);
+			void							set_location_directive(keyType key, locationValueType value);
+			const LocationBlock::valueType	&get_location_directive(keyType key, keyType location_key) const;
 
 		private:
 			normalMapType	_normal_directives;

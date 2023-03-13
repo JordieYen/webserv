@@ -9,6 +9,12 @@ namespace ft
 		test_connection(this->_listening);
 	}
 
+	ListeningSocket::ListeningSocket(const ListeningSocket &listeningsocket_clone) : BindingSocket(listeningsocket_clone)
+	{
+		this->_backlog = listeningsocket_clone._backlog;
+		this->_listening = listeningsocket_clone._listening;
+	}
+
 	ListeningSocket::~ListeningSocket() {}
 
 	void	ListeningSocket::start_listening(void)

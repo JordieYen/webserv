@@ -7,24 +7,27 @@
 # include "SimpleServer.hpp"
 # include "../../Parsing/Parsing.hpp"
 
+# define DEFAULT_CONFIG_PATH "default.conf"
+
 namespace	ft
 {
 	class WebServer
 	{
 		public:
-			typedef std::vector<SimpleServer>	serverArrayType;
+			typedef std::map<int, SimpleServer>	serverMapType;
 			typedef std::vector<int>			fdArrayType;
 
 			WebServer(void);
-			WebServer(std::string input_file);
+			WebServer(std::string config_path);
 			~WebServer(void);
 
+			void	setup(void);
 			void	launch(void);
 
 		private:
-			ConfigParser	parser;
-			fdArrayType		_fds;
-			serverArrayType	_servers;
+			ConfigParser	_parser;
+			fdArrayType		_client_fds;
+			serverMapType	_servers;
 	};
 }
 

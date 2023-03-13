@@ -49,8 +49,8 @@ namespace	ft
 		this->_location_directives.insert(std::make_pair(key, value));
 	}
 
-	const ServerConfig::locationValueType	&ServerConfig::get_location_directive(keyType key)
+	const LocationBlock::valueType	&ServerConfig::get_location_directive(keyType key, keyType location_key) const
 	{
-		return (this->_location_directives.at(key));
+		return (this->_location_directives.at(key).get_directive(location_key));
 	}
 }

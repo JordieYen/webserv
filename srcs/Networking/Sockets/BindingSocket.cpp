@@ -8,6 +8,11 @@ namespace	ft
 		this->test_connection(this->_binding);
 	}
 
+	BindingSocket::BindingSocket(const BindingSocket &bindingsocket_clone) : SimpleSocket(bindingsocket_clone)
+	{
+		this->_binding = bindingsocket_clone._binding;
+	}
+
 	BindingSocket::~BindingSocket() {}
 
 	int	BindingSocket::connect_to_network(int sock, sockaddr_in address)
