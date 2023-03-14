@@ -1,6 +1,8 @@
 #ifndef ERRORCHECKER_HPP
 # define ERRORCHECKER_HPP
 
+# include <cmath>
+
 # include <iostream>
 # include <sstream>
 # include <string>
