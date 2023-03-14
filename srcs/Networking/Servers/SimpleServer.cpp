@@ -26,41 +26,51 @@ namespace	ft
 		return (this->_port);
 	}
 
-	int	SimpleServer::get_server_fd(void) const
-	{
-		return (this->_socket->get_fd());
-	}
-
 	ListeningSocket*	SimpleServer::get_socket(void) const
 	{
 		return (this->_socket);
 	}
 
-	void	SimpleServer::accepter(void)
+	int	SimpleServer::get_server_fd(void) const
+	{
+		return (this->_socket->get_fd());
+	}
+
+	int	SimpleServer::get_pollfd_index(void) const
+	{
+		return (this->_pollfd_index);
+	}
+
+	void	SimpleServer::set_pollfd_index(int pollfd_index)
+	{
+		this->_pollfd_index = pollfd_index;
+	}
+
+	int	SimpleServer::accept_connection(void)
 	{
 		struct sockaddr_in	address = this->_socket->get_address();
 		int					addrlen = sizeof(address);
+		int					fd;
 
-		this->_new_socket = accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen);
-		this->_buffer = static_cast<char *>(malloc(30000 * sizeof(char)));
-		read(this->_new_socket, this->_buffer, 30000);
-		this->_content = string(this->_buffer);
-		free(this->_buffer);
+		std::cout << "Accepting fd: " << std::endl;
+		fd = accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen);
+		std::cout << "Accepted fd: " << fd << std::endl;
+		return (fd);
 	}
 
-	void	SimpleServer::handler(void)
-	{
-		std::cout << this->_content << std::endl;
-	}
+	// void	SimpleServer::handler(void)
+	// {
+	// 	std::cout << this->_content << std::endl;
+	// }
 	
-	void	SimpleServer::responder(void)
+	void	SimpleServer::respond(int fd)
 	{
-		ifstream	index("index/index.html");
-		string		content;
+		// ifstream	index("index/index.html");
+		// string		content;
 
-		index >> content;
-		write(this->_new_socket, content.c_str(), content.length());
-		// write(this->_new_socket, "Hello from server!", 19);
-		close(this->_new_socket);
+		// index >> content;
+		// write(this->_new_socket, content.c_str(), content.length());
+		send(fd, "Hello from server!", 19, 0);
+		// close(this->_new_socket);
 	}
 }

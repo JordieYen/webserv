@@ -1,10 +1,13 @@
 #ifndef SIMPLESERVER_HPP
 # define SIMPLESERVER_HPP
 
+# include <cstdlib>
+
 # include <fstream>
 # include <sstream>
 # include <unistd.h>
 # include <sys/types.h>
+# include <poll.h>
 # include "ServerConfig.hpp"
 # include "../Sockets/Sockets.hpp"
 
@@ -17,26 +20,27 @@ namespace	ft
 	class	SimpleServer
 	{
 		public:
+			typedef struct pollfd	pollFdType;
 			SimpleServer(ServerConfig config);
-			SimpleServer(const SimpleServer &simpleserver_clone);
 			~SimpleServer();
 
 			int					get_port(void) const;
-			int					get_server_fd(void) const;
 			ListeningSocket*	get_socket(void) const;
+			int					get_server_fd(void) const;
+			int					get_pollfd_index(void) const;
+			
+			bool				is_pollin(void) const;
+			void				set_pollfd_index(int pollfd_index);
 
-			void	accepter(void);
-			void	handler(void);
-			void	responder(void);
+			int		accept_connection(void);
+			// void	handler(void);
+			void	respond(int fd);
 
 		private:
 			ServerConfig		_config;
-			ListeningSocket*	_socket;
 			int					_port;
-
-			std::string			_content;
-			char				*_buffer;
-			int					_new_socket;
+			ListeningSocket*	_socket;
+			int					_pollfd_index;
 	};
 }
 
