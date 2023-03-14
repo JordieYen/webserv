@@ -12,10 +12,10 @@ namespace	ft
 
 	void	LocationBlock::set_directive(keyType key, valueType value)
 	{
-		this->_directives.insert(std::make_pair(key, value));
+		this->_directives.insert(make_pair(key, value));
 	}
 
-	const LocationBlock::valueType	&LocationBlock::get_directive(keyType key) const
+	const LocationBlock::valueType&	LocationBlock::get_directive(keyType key) const
 	{
 		return (this->_directives.at(key));
 	}
@@ -27,7 +27,7 @@ namespace	ft
 
 	ServerConfig::ServerConfig() {}
 
-	ServerConfig	&ServerConfig::operator = (const ServerConfig &server_config_var)
+	ServerConfig&	ServerConfig::operator = (const ServerConfig& server_config_var)
 	{
 		this->_normal_directives = server_config_var._normal_directives;
 		this->_location_directives = server_config_var._location_directives;
@@ -36,20 +36,20 @@ namespace	ft
 
 	void	ServerConfig::set_normal_directive(keyType key, normalValueType value)
 	{
-		this->_normal_directives.insert(std::make_pair(key, value));
+		this->_normal_directives.insert(make_pair(key, value));
 	}
 
-	const ServerConfig::normalValueType	&ServerConfig::get_normal_directive(keyType key) const
+	const ServerConfig::normalValueType&	ServerConfig::get_normal_directive(keyType key) const
 	{
 		return (this->_normal_directives.at(key));
 	}
 
 	void	ServerConfig::set_location_directive(keyType key, locationValueType value)
 	{
-		this->_location_directives.insert(std::make_pair(key, value));
+		this->_location_directives.insert(make_pair(key, value));
 	}
 
-	const LocationBlock::valueType	&ServerConfig::get_location_directive(keyType key, keyType location_key) const
+	const LocationBlock::valueType&	ServerConfig::get_location_directive(keyType key, keyType location_key) const
 	{
 		return (this->_location_directives.at(key).get_directive(location_key));
 	}

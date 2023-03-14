@@ -52,5 +52,8 @@ int	main(int argc, char **argv)
 		webserv.launch();
 	}
 	else
+	{
 		ft::WebServer	webserv;
+		webserv.launch();
+	}
 }

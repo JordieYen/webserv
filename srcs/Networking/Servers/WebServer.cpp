@@ -7,7 +7,7 @@ namespace ft
 		this->setup();
 	}
 
-	WebServer::WebServer(std::string config_path) : _parser(config_path)
+	WebServer::WebServer(string config_path) : _parser(config_path)
 	{
 		this->setup();
 	}
@@ -26,19 +26,18 @@ namespace ft
 		this->_parser.check_config();
 		this->_parser.parse_config();
 
-		std::vector<ft::ServerConfig>	configs = this->_parser.get_parsed_server_configs();
+		vector<ft::ServerConfig>	configs = this->_parser.get_parsed_server_configs();
 
-		for (std::vector<ft::ServerConfig>::iterator it = configs.begin(); it != configs.end(); it++)
+		for (vector<ft::ServerConfig>::iterator it = configs.begin(); it != configs.end(); it++)
 		{
 			SimpleServer	*new_server = new SimpleServer(*it);
 
-			this->_servers.insert(std::make_pair(new_server->get_port(), new_server));
+			this->_servers.insert(make_pair(new_server->get_port(), new_server));
 		}
 	}
 
 	void	WebServer::launch(void)
 	{
-		int	i = 0;
 		while (true)
 		{
 			for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
@@ -47,7 +46,6 @@ namespace ft
 				server->second->handler();
 				server->second->responder();
 			}
-			i++;
 		}
 	}
 }

@@ -1,7 +1,6 @@
-#ifndef BIDINGSOCKET_HPP
-# define BIDINGSOCKET_HPP
+#ifndef BINDINGSOCKET_HPP
+# define BINDINGSOCKET_HPP
 
-# include <stdio.h>
 # include "SimpleSocket.hpp"
 
 namespace	ft
@@ -13,11 +12,6 @@ namespace	ft
 			~BindingSocket();
 
 			int	connect_to_network(int sock, struct sockaddr_in address);
-
-			int	get_binding(void);
-
-		private:
-			int	_binding;
 	};
 }
 

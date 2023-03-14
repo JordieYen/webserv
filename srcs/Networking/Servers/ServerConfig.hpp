@@ -5,6 +5,11 @@
 # include <vector>
 # include <map>
 
+using std::string;
+using std::vector;
+using std::map;
+using std::make_pair;
+
 namespace	ft
 {
 	class	LocationBlock
@@ -16,16 +21,16 @@ namespace	ft
 				EXACT
 			};
 
-			typedef std::string						keyType;
-			typedef std::vector<std::string>		valueType;
-			typedef std::map<keyType, valueType>	mapType;
+			typedef string					keyType;
+			typedef vector<string>			valueType;
+			typedef map<keyType, valueType>	mapType;
 
 			LocationBlock(bool exact_match);
 
-			void			set_directive(keyType key, valueType value);
-			const valueType	&get_directive(keyType key) const;
+			void				set_directive(keyType key, valueType value);
+			const valueType&	get_directive(keyType key) const;
 
-			MatchType		get_match_type(void) const;
+			MatchType			get_match_type(void) const;
 
 		private:
 			mapType		_directives;
@@ -35,20 +40,20 @@ namespace	ft
 	class	ServerConfig
 	{
 		public:
-			typedef std::string								keyType;
-			typedef std::vector<std::string>				normalValueType;
-			typedef std::map<keyType, normalValueType>		normalMapType;
-			typedef ft::LocationBlock						locationValueType;
-			typedef std::map<keyType, locationValueType>	locationMapType;
+			typedef string							keyType;
+			typedef vector<string>					normalValueType;
+			typedef map<keyType, normalValueType>	normalMapType;
+			typedef LocationBlock					locationValueType;
+			typedef map<keyType, locationValueType>	locationMapType;
 
 			ServerConfig();
-			ServerConfig	&operator = (const ServerConfig &server_config_var);
+			ServerConfig&	operator = (const ServerConfig &server_config_var);
 
 			void							set_normal_directive(keyType key, normalValueType value);
-			const normalValueType			&get_normal_directive(keyType key) const;
+			const normalValueType&			get_normal_directive(keyType key) const;
 
 			void							set_location_directive(keyType key, locationValueType value);
-			const LocationBlock::valueType	&get_location_directive(keyType key, keyType location_key) const;
+			const LocationBlock::valueType&	get_location_directive(keyType key, keyType location_key) const;
 
 		private:
 			normalMapType	_normal_directives;

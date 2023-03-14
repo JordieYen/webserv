@@ -2,7 +2,7 @@
 
 namespace	ft
 {
-	ConfigParser::ConfigParser(std::string config_path)
+	ConfigParser::ConfigParser(string config_path)
 	{
 		this->_config_path = config_path;
 	}

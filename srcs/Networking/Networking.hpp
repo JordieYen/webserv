@@ -1,7 +1,5 @@
-#ifndef FTLIBCNETWORKING_HPP
-# define FTLIBCNETWORKING_HPP
-
-# include <stdio.h>
+#ifndef NETWORKING_HPP
+# define NETWORKING_HPP
 
 # include "Servers/Servers.hpp"
 # include "Sockets/Sockets.hpp"

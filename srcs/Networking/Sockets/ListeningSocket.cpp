@@ -5,15 +5,14 @@ namespace ft
 	ListeningSocket::ListeningSocket(int domain, int service, int protocol, int port, u_long interface, int backlog) : BindingSocket(domain, service, protocol, port, interface)
 	{
 		this->_backlog = backlog;
-		this->start_listening();
-		test_connection(this->_listening);
+		this->test_connection(this->start_listening());
 	}
 
 	ListeningSocket::~ListeningSocket() {}
 
-	void	ListeningSocket::start_listening(void)
+	int	ListeningSocket::start_listening(void)
 	{
-		this->_listening = listen(this->get_sock(), this->_backlog);
+		return (listen(this->get_fd(), this->_backlog));
 	}
 
 }

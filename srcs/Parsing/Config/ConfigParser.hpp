@@ -1,7 +1,6 @@
 #ifndef CONFIGPARSER_HPP
 # define CONFIGPARSER_HPP
 
-# include <stdio.h>
 # include <iostream>
 # include <sstream>
 # include <fstream>

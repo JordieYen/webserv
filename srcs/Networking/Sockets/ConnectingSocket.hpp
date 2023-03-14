@@ -1,7 +1,6 @@
 #ifndef CONNECTINGSOCKET_HPP
 # define CONNECTINGSOCKET_HPP
 
-# include <stdio.h>
 # include "SimpleSocket.hpp"
 
 namespace	ft
@@ -13,11 +12,6 @@ namespace	ft
 			~ConnectingSocket();
 
 			int	connect_to_network(int sock, struct sockaddr_in address);
-
-			int	get_connecting(void);
-
-		private:
-			int	_connecting;
 	};
 }
 

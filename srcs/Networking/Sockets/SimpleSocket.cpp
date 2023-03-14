@@ -7,13 +7,13 @@ namespace ft
 		this->_address.sin_family = domain;
 		this->_address.sin_port = htons(port);
 		this->_address.sin_addr.s_addr = htonl(interface);
-		this->_sock = socket(domain, service, protocol);
-		this->test_connection(this->_sock);
+		this->_fd = socket(domain, service, protocol);
+		this->test_connection(this->_fd);
 	}
 
 	SimpleSocket::~SimpleSocket()
 	{
-		close(this->_sock);
+		close(this->_fd);
 	}
 
 	void	SimpleSocket::test_connection(int item_to_test)
@@ -25,19 +25,9 @@ namespace ft
 		}
 	}
 
-	int	SimpleSocket::get_sock(void)
+	int	SimpleSocket::get_fd(void) const
 	{
-		return (this->_sock);
-	}
-
-	struct sockaddr_in	SimpleSocket::get_address(void)
-	{
-		return (this->_address);
-	}
-
-	int	SimpleSocket::get_sock(void) const
-	{
-		return (this->_sock);
+		return (this->_fd);
 	}
 
 	struct sockaddr_in	SimpleSocket::get_address(void) const

@@ -1,7 +1,5 @@
-#ifndef FTLIBCSOCKETS_HPP
-# define FTLIBCSOCKETS_HPP
-
-# include <stdio.h>
+#ifndef SOCKETS_HPP
+# define SOCKETS_HPP
 
 # include "SimpleSocket.hpp"
 

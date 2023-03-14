@@ -9,16 +9,21 @@
 
 # define DEFAULT_CONFIG_PATH "default.conf"
 
+using std::string;
+using std::vector;
+using std::map;
+using std::make_pair;
+
 namespace	ft
 {
 	class WebServer
 	{
 		public:
-			typedef std::map<int, SimpleServer*>	serverMapType;
-			typedef std::vector<int>				fdArrayType;
+			typedef map<int, SimpleServer*>	serverMapType;
+			typedef vector<int>				fdArrayType;
 
 			WebServer(void);
-			WebServer(std::string config_path);
+			WebServer(string config_path);
 			~WebServer(void);
 
 			void	setup(void);
