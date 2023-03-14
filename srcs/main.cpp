@@ -49,11 +49,11 @@ int	main(int argc, char **argv)
 		// 	std::cout << std::endl;
 		// }
 		ft::WebServer	webserv(argv[1]);
-		webserv.launch();
+		// webserv.launch();
 	}
 	else
 	{
 		ft::WebServer	webserv;
-		webserv.launch();
+		// webserv.launch();
 	}
 }

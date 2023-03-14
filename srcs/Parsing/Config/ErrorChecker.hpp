@@ -2,12 +2,14 @@
 # define ERRORCHECKER_HPP
 
 # include <iostream>
+# include <sstream>
 # include <string>
 # include <vector>
 # include <iterator>
 # include <algorithm>
 
 using std::string;
+using std::istringstream;
 using std::vector;
 using std::count;
 
