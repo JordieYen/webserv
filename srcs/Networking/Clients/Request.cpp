@@ -21,7 +21,7 @@ namespace	ft
 		std::cout << "READING..." << std::endl;
 		if (this->_content.find("\r\n\r\n") != string::npos)
 		{
-			std::cout << "Content: [" << this->_content << "]" << std::endl;
+			// std::cout << "Content: [" << this->_content << "]" << std::endl;
 			this->parse_buffer();
 		}
 	}

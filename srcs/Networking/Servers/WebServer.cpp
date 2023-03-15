@@ -73,10 +73,13 @@ namespace ft
 					}
 				}
 			}
-			for (clientMapType::iterator client = this->_clients.begin();  client != this->_clients.end(); client++)
+			for (clientMapType::iterator client = this->_clients.begin();  client != this->_clients.end();)
 			{
 				if (this->_pollfds.at(client->second->get_pollfd_index()).revents == 0)
+				{
+					client++;
 					continue;
+				}
 				cout << "Poll size : " << this->_pollfds.size() << endl;
 				std::cout << "Client checking with fd : " << client->second->get_fd() << std::endl;
 				printf("%d revents = %s %s %s\n", client->second->get_fd(),
@@ -100,8 +103,10 @@ namespace ft
 					this->_servers.at(client->first)->respond(client->second->get_fd());
 					this->_pollfds.erase(this->_pollfds.begin() + client->second->get_pollfd_index());
 					// seg faults due to trying to loop with iterator after erasing itself
-					this->_clients.erase(client);
+					this->_clients.erase(client++);
+					continue;
 				}
+				client++;
 			}
 		}
 	}
