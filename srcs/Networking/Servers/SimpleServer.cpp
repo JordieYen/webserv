@@ -63,14 +63,10 @@ namespace	ft
 	// 	std::cout << this->_content << std::endl;
 	// }
 	
-	void	SimpleServer::respond(int fd)
+	void	SimpleServer::respond(Request& request)
 	{
-		// ifstream	index("index/index.html");
-		// string		content;
+		Response response(this->_config, request);
 
-		// index >> content;
-		// write(this->_new_socket, content.c_str(), content.length());
-		send(fd, "Hello from server!", 19, 0);
-		// close(this->_new_socket);
+		send(request.get_client_fd(), "Hello from server!", 19, 0);
 	}
 }

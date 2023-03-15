@@ -25,7 +25,7 @@ namespace	ft
 		public:
 			typedef struct pollfd			pollFdType;
 			typedef map<int, SimpleServer*>	serverMapType;
-			typedef map<int, Client*>		clientMapType;
+			typedef vector<Client*>			clientArrayType;
 			typedef vector<pollFdType>		pollFdArrayType;
 
 			WebServer(void);
@@ -39,7 +39,7 @@ namespace	ft
 			ConfigParser	_parser;
 			pollFdArrayType	_pollfds;
 			serverMapType	_servers;
-			clientMapType	_clients;
+			clientArrayType	_clients;
 	};
 }
 

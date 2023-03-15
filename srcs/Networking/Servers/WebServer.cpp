@@ -51,16 +51,25 @@ namespace ft
 			std::cout << "Poll loop..." << std::endl;
 			for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
 			{
-				if (this->_pollfds.at(server->second->get_pollfd_index()).revents == 0)
+				if (this->_pollfds[server->second->get_pollfd_index()].revents == 0)
+				{
+					std::cout << "server revents == 0" << std::endl;
 					continue;
+				}
+					
+				cout << "Poll size : " << this->_pollfds.size() << endl;
 				std::cout << "Server checking with fd : " << server->second->get_server_fd() << std::endl;
-				if (this->_pollfds.at(server->second->get_pollfd_index()).revents & POLLIN)
+				printf("server revents = %s%s%s at fd %d\n",
+					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLIN) ? "POLLIN" : "",
+					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLOUT) ? "POLLOUT" : "",
+					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLHUP) ? "POLLHUP" : "", server->second->get_server_fd());
+				if (this->_pollfds[server->second->get_pollfd_index()].revents & POLLIN)
 				{
 					int	client_fd = server->second->accept_connection();
 					if (client_fd != -1)
 					{
 						std::cout << "Server pollin..." << std::endl;
-						Client*		new_client = new Client(client_fd);
+						Client*		new_client = new Client(server->second->get_port(), client_fd);
 						pollFdType	new_pollfd;
 
 						new_pollfd.fd = client_fd;
@@ -68,41 +77,48 @@ namespace ft
 						this->_pollfds.push_back(new_pollfd);
 						// cout << new_client->_pollfd << endl;
 						new_client->set_pollfd_index(this->_pollfds.size() - 1);
-						this->_clients.insert(make_pair(server->second->get_port(), new_client));
+						this->_clients.push_back(new_client);
 						std::cout << "Client created..." << std::endl;
 					}
 				}
 			}
-			for (clientMapType::iterator client = this->_clients.begin();  client != this->_clients.end();)
+			std::cout << "About to loop through client array of size " << this->_clients.size() << std::endl;
+			for (clientArrayType::iterator client = this->_clients.begin();  client != this->_clients.end();)
 			{
-				if (this->_pollfds.at(client->second->get_pollfd_index()).revents == 0)
+				std::cout << "Client loop..." << std::endl;
+				std::cout << "pollfd index: " << (*client)->get_pollfd_index() << std::endl;
+				if (this->_pollfds[(*client)->get_pollfd_index()].revents == 0)
 				{
+					std::cout << "client at " << (*client)->get_fd() << " revents == 0" << std::endl;
 					client++;
 					continue;
 				}
 				cout << "Poll size : " << this->_pollfds.size() << endl;
-				std::cout << "Client checking with fd : " << client->second->get_fd() << std::endl;
-				printf("%d revents = %s %s %s\n", client->second->get_fd(),
-					(this->_pollfds.at(client->second->get_pollfd_index()).revents & POLLIN) ? "POLLIN" : "",
-					(this->_pollfds.at(client->second->get_pollfd_index()).revents & POLLOUT) ? "POLLOUT" : "",
-					(this->_pollfds.at(client->second->get_pollfd_index()).revents & POLLHUP) ? "POLLHUP" : "");
+				std::cout << "Client checking with fd : " << (*client)->get_fd() << std::endl;
+				printf("client revents = %s%s%s at fd %d\n",
+					(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLIN) ? "POLLIN" : "",
+					(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLOUT) ? "POLLOUT" : "",
+					(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLHUP) ? "POLLHUP" : "", (*client)->get_fd());
 
-				if (this->_pollfds[client->second->get_pollfd_index()].revents & POLLIN)
+				if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLHUP)
+				{
+					this->_pollfds.erase(this->_pollfds.begin() + (*client)->get_pollfd_index());
+					this->_clients.erase(client++);
+					continue;
+				}
+				else if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLIN)
 				{
 					std::cout << "Client pollin..." << std::endl;
-					client->second->read_buffer();
-					if (client->second->get_request().has_read())
-						this->_pollfds.at(client->second->get_pollfd_index()).events = POLLOUT;
+					(*client)->read_buffer();
+					if ((*client)->get_request().has_read())
+						this->_pollfds[(*client)->get_pollfd_index()].events = POLLOUT;
 				}
-				else if (this->_pollfds[client->second->get_pollfd_index()].revents & POLLOUT)
+				else if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLOUT)
 				{
-					std::cout << "Client pollout..." << std::endl;
-					std::cout << "method: " << client->second->get_request().get_header("method") << std::endl;
-					std::cout << "path: " << client->second->get_request().get_header("path") << std::endl;
-					std::cout << "host: " << client->second->get_request().get_header("host") << std::endl;
-					this->_servers.at(client->first)->respond(client->second->get_fd());
-					this->_pollfds.erase(this->_pollfds.begin() + client->second->get_pollfd_index());
-					// seg faults due to trying to loop with iterator after erasing itself
+					std::cout << "Client pollout at " << (*client)->get_fd() << std::endl;
+					this->_servers[(*client)->get_port()]->respond((*client)->get_request());
+					// this->_pollfds[(*client)->get_pollfd_index()].events = POLLIN;
+					this->_pollfds.erase(this->_pollfds.begin() + (*client)->get_pollfd_index());
 					this->_clients.erase(client++);
 					continue;
 				}

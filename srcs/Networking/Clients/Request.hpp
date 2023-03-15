@@ -25,7 +25,8 @@ namespace ft
 			void	read_buffer(void);
 			void	parse_buffer(void);
 			
-			string	get_header(string key);
+			int		get_client_fd(void) const;
+			string	get_header(string key) const;
 			bool	has_read(void) const;
 
 		private:

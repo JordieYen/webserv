@@ -2,12 +2,18 @@
 
 namespace	ft
 {
-	Client::Client(int fd) : _request(fd)
+	Client::Client(int port, int fd) : _request(fd)
 	{
+		this->_port = port;
 		this->_fd = fd;
 	}
 
 	Client::~Client() {};
+
+	int	Client::get_port(void) const
+	{
+		return (this->_port);
+	}
 
 	int	Client::get_fd(void) const
 	{

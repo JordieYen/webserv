@@ -18,7 +18,10 @@ namespace	ft
 		recv(this->_client_fd, buffer, 30000, 0);
 		this->_content.append(string(buffer));
 		free(buffer);
-		std::cout << "READING..." << std::endl;
+		// std::cout << "READING..." << std::endl;
+		// std::cout << "============================" << std::endl;
+		// std::cout << "Content: [" << this->_content << "]" << std::endl;
+		// std::cout << "============================" << std::endl;
 		if (this->_content.find("\r\n\r\n") != string::npos)
 		{
 			// std::cout << "Content: [" << this->_content << "]" << std::endl;
@@ -41,7 +44,12 @@ namespace	ft
 		this->_has_read = true;
 	}
 
-	string	Request::get_header(string key)
+	int	Request::get_client_fd(void) const
+	{
+		return (this->_client_fd);
+	}
+
+	string	Request::get_header(string key) const
 	{
 		return (this->_headers.at(key));
 	}

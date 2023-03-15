@@ -12,9 +12,10 @@ namespace	ft
 		public:
 			typedef struct pollfd	pollFdType;
 
-			Client(int fd);
+			Client(int port, int fd);
 			~Client();
 
+			int			get_port(void) const;
 			int			get_fd(void) const;
 			Request&	get_request(void);
 			int			get_pollfd_index(void) const;
@@ -25,6 +26,7 @@ namespace	ft
 			pollFdType*	_pollfd;
 
 		private:
+			int			_port;
 			int			_fd;
 			Request		_request;
 			int			_pollfd_index;

@@ -10,6 +10,8 @@
 # include <poll.h>
 # include "ServerConfig.hpp"
 # include "../Sockets/Sockets.hpp"
+# include "../Clients/Request.hpp"
+# include "Response.hpp"
 
 using std::string;
 using std::ifstream;
@@ -34,7 +36,7 @@ namespace	ft
 
 			int		accept_connection(void);
 			// void	handler(void);
-			void	respond(int fd);
+			void	respond(Request& request);
 
 		private:
 			ServerConfig		_config;
