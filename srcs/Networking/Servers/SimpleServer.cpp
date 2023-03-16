@@ -66,7 +66,5 @@ namespace	ft
 	void	SimpleServer::respond(Request& request)
 	{
 		Response response(this->_config, request);
-
-		send(request.get_client_fd(), "Hello from server!", 19, 0);
 	}
 }

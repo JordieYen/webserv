@@ -144,8 +144,8 @@ namespace ft
 
 	void	ErrorChecker::check_location_key(configIterType& line)
 	{
-		const char*		key_checks[] = {"root", "proxy_pass", "expires"};
-		stringCheckType	checks(key_checks, key_checks + 3);
+		const char*		key_checks[] = {"root", "proxy_pass", "expires", "index"};
+		stringCheckType	checks(key_checks, key_checks + 4);
 		bool			is_valid = false;
 
 		for (stringCheckIterType check = checks.begin(); check != checks.end(); check++)

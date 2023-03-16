@@ -53,4 +53,9 @@ namespace	ft
 	{
 		return (this->_location_directives.at(key).get_directive(location_key));
 	}
+	
+	const ServerConfig::locationMapType&	ServerConfig::get_location_map(void) const
+	{
+		return (this->_location_directives);
+	}
 }
