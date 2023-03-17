@@ -57,3 +57,29 @@ int	main(int argc, char **argv)
 		webserv.launch();
 	}
 }
+
+// #include <iostream>
+// #include <vector>
+// #include <map>
+
+// int	main(void)
+// {
+// 	std::map<int, std::vector<int>* >	test;
+
+
+// 	while (1)
+// 	{
+// 		test.insert(std::make_pair(80, new std::vector<int>(1, 42)));
+// 		for (std::map<int, std::vector<int>* >::iterator it = test.begin(); it != test.end(); )
+// 		{
+// 			std::cout << it->first << std::endl;
+// 			if (it->first == 80)
+// 			{
+// 				std::cout << it->first << std::endl;
+// 				test.erase(it++);
+// 			}
+// 			else
+// 				++it;
+// 		}
+// 	}
+// }

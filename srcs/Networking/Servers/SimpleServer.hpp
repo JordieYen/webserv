@@ -31,7 +31,6 @@ namespace	ft
 			int					get_server_fd(void) const;
 			int					get_pollfd_index(void) const;
 			
-			bool				is_pollin(void) const;
 			void				set_pollfd_index(int pollfd_index);
 
 			int		accept_connection(void);

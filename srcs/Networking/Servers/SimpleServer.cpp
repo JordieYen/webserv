@@ -66,5 +66,7 @@ namespace	ft
 	void	SimpleServer::respond(Request& request)
 	{
 		Response response(this->_config, request);
+
+		response.handle_methods();
 	}
 }

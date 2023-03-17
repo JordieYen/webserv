@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			html	{
+				background-image: url('mac_desktop_background.jpg');
+				background-size: cover;
+				height: 100%;
+			}
+			body	{
+				height: 100%;
+				width: 100%;
+			}
+			.window	{
+				background-color: white;
+				border-radius: 5px;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				height: 50%;
+				width: 50%;
+				position: relative;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				border: 1px solid rgb(179,179,179);
+			}
+			.header	{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 4.5%;
+				background-image: linear-gradient(to bottom, #e4e4e4 , #cecece);
+				border-bottom: 1px solid rgb(179,179,179);
+			}
+			.header_title	{
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: #505050;
+				margin-left: 4px;
+			}
+			.left_buttons	{
+				position: absolute;
+				margin-right: 93%;
+			}
+			.button	{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				margin: 2px;
+				margin-top: 7px;
+				border-radius: 50%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="window">
+			<div class="header">
+				<div class="left_buttons">
+					<span class="button" style="background-color: rgb(255, 98, 89);"></span>
+					<span class="button" style="background-color: rgb(255, 195, 50);"></span>
+					<span class="button" style="background-color: rgb(46, 208, 66);"></span>
+				</div>
+				<img src="folder_icons/folder_256.png" height="15" width="15">
+				<p class="header_title">index</p>
+			</div>
+		</div>
+	</body>
+</html>

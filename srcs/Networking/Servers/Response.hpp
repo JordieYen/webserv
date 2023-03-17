@@ -1,9 +1,10 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
-# include <bits/stdc++.h>
+// # include <bits/stdc++.h>
 
 # include <iostream>
+# include <string>
 # include <vector>
 # include <map>
 # include <sstream>
@@ -16,7 +17,7 @@ using std::vector;
 using std::map;
 using std::make_pair;
 using std::ifstream;
-using std::istringstream;
+using std::stringstream;
 
 namespace	ft
 {
@@ -26,21 +27,26 @@ namespace	ft
 			Response(ServerConfig& config, Request& request);
 			~Response(void);
 
-			void	handle_methods(void);
+			string	get_content_length(void);
+			
+			string	get_closest_match(void);
+			string	get_path_to_index(void);
+			void	read_config(string file_name);
+
+			void	prepend_header(void);
 
 			void	handle_get();
-			void	handle_post();
-			void	handle_delete();
-
-			void	read_config(string file_name);
-			string	get_path_to_index(void);
-			string	get_closest_match(void);
+			// void	handle_post();
+			// void	handle_delete();
+			void	handle_methods(void);
 
 		private:
 			ServerConfig&	_config;
 			Request&		_request;
 
-			string			_index;
+			int				_status_code;
+			
+			string			_content;
 	};
 }
 

@@ -11,7 +11,7 @@ OBJS_FILES	= $(SRCS_FILES:.cpp=.o)
 
 CC			= c++
 CFLAGS		= -Wall -Wextra -Werror -std=c++98
-FSAN		= -fsanitize=address -g
+FSAN		= -fsanitize=address -g3
 
 all:	$(NAME)
 

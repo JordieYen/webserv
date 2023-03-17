@@ -16,6 +16,7 @@ namespace	ft
 
 		buffer = static_cast<char*>(malloc(30000 * sizeof(char)));
 		recv(this->_client_fd, buffer, 30000, 0);
+		std::cout << "buffer: [" << buffer << "]" << std::endl;
 		this->_content.append(string(buffer));
 		free(buffer);
 		// std::cout << "READING..." << std::endl;
