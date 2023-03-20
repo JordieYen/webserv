@@ -45,6 +45,13 @@ namespace	ft
 		this->_has_read = true;
 	}
 
+	void	Request::clear_buffer(void)
+	{
+		this->_has_read = false;
+		this->_content.clear();
+		this->_headers.clear();
+	}
+
 	int	Request::get_client_fd(void) const
 	{
 		return (this->_client_fd);

@@ -39,4 +39,9 @@ namespace	ft
 	{
 		this->_request.read_buffer();
 	}
+
+	void	Client::clear_buffer(void)
+	{
+		this->_request.clear_buffer();
+	}
 }

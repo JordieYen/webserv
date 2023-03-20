@@ -32,6 +32,12 @@ namespace	ft
 			WebServer(string config_path);
 			~WebServer(void);
 
+			template <class T>
+			void	log(string desc, T value)
+			{
+				cout << desc << " : " << value << endl;
+			};
+
 			void	setup(void);
 			void	launch(void);
 

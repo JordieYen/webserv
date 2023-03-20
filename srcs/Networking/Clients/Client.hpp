@@ -23,7 +23,7 @@ namespace	ft
 			void		set_pollfd_index(int pollfd_index);
 
 			void		read_buffer(void);
-			pollFdType*	_pollfd;
+			void		clear_buffer(void);
 
 		private:
 			int			_port;

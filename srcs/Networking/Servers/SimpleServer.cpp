@@ -5,7 +5,7 @@ namespace	ft
 	SimpleServer::SimpleServer(ServerConfig config) : _config(config)
 	{
 		this->_config.set_normal_directive("listen", ServerConfig::normalValueType(1, "80"));
-		this->_config.set_normal_directive("root", ServerConfig::normalValueType(1, "/index"));
+		this->_config.set_normal_directive("root", ServerConfig::normalValueType(1, "public"));
 		this->_config.set_normal_directive("index", ServerConfig::normalValueType(1, "index.html"));
 
 		int				port;

@@ -5,17 +5,13 @@
 
 # include <iostream>
 # include <string>
-# include <vector>
-# include <map>
 # include <sstream>
 # include <fstream>
+# include <sys/stat.h>
 # include "ServerConfig.hpp"
 # include "../Clients/Request.hpp"
 
 using std::string;
-using std::vector;
-using std::map;
-using std::make_pair;
 using std::ifstream;
 using std::stringstream;
 
@@ -27,10 +23,13 @@ namespace	ft
 			Response(ServerConfig& config, Request& request);
 			~Response(void);
 
+			bool	path_is_valid_file(string path);
+			
 			string	get_content_length(void);
 			
 			string	get_closest_match(void);
-			string	get_path_to_index(void);
+			string	get_path_to(string directive, string match);
+			string	get_path_to_file(void);
 			void	read_config(string file_name);
 
 			void	prepend_header(void);

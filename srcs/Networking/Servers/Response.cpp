@@ -11,6 +11,16 @@ namespace ft
 
 	Response::~Response(void) {}
 
+	bool	Response::path_is_valid_file(string path)
+	{
+		struct stat	path_stat;
+		int			path_exists;
+
+		path = path.substr(path.find("/") == 0);
+		path_exists = stat(path.c_str(), &path_stat);
+		return (path_exists == 0 && (path_stat.st_mode & S_IFREG));
+	}
+
 	string	Response::get_content_length(void)
 	{
 		stringstream	length_stream;
@@ -24,17 +34,17 @@ namespace ft
 		string											request_path = this->_request.get_header("path");
 		ServerConfig::locationMapType					location_map = this->_config.get_location_map();
 		ServerConfig::locationMapType::reverse_iterator	path_to_check = location_map.rbegin();
-		string											closest_match;
+		string											closest_match = "/";
 
-		while (request_path.find(path_to_check->first) != 0 && path_to_check != location_map.rend())
+		while (path_to_check != location_map.rend())
 		{
-			std::cout << "path_to_check: " << path_to_check->first << std::endl;
-			std::cout << "request_path: " << request_path << std::endl;
+			if (request_path.find(path_to_check->first) == 0)
+			{
+				closest_match = path_to_check->first;
+				break;
+			}
 			path_to_check++;
 		}
-		if (request_path.find(path_to_check->first) == 0)
-			closest_match = path_to_check->first;
-		std::cout << "closest match = " << closest_match << std::endl;
 
 		if (closest_match.empty())
 			std::cout << "path not found" << std::endl;
@@ -42,30 +52,42 @@ namespace ft
 		return (closest_match);
 	}
 
-	string	Response::get_path_to_index(void)
+	string	Response::get_path_to(string directive, string match)
 	{
-		string	closest_match = this->get_closest_match();
-		string	path_to_index;
+		try
+		{
+			return (this->_config.get_location_directive(match, directive).front());
+		}
+		catch (const std::out_of_range& e)
+		{
+			return (this->_config.get_normal_directive(directive).front());
+		}
+	}
 
-		try
+	string	Response::get_path_to_file(void)
+	{
+		string	request_path = this->_request.get_header("path");
+		string	closest_match = this->get_closest_match();
+		string	path_to_file;
+
+		this->_status_code = 200;
+		if (this->path_is_valid_file(request_path))
+			path_to_file = request_path.substr(1);
+		else
 		{
-			std::cout << closest_match << std::endl;
-			path_to_index = this->_config.get_location_directive(closest_match, "root").front() + "/";
+			path_to_file = this->get_path_to("root", closest_match) + "/";
+			if (closest_match == request_path)
+				path_to_file.append(this->get_path_to("index", closest_match));
+			else
+				path_to_file.append(request_path.substr(closest_match.length() + (request_path[closest_match.length()] == '/')));
+			if (!this->path_is_valid_file(path_to_file))
+			{
+				path_to_file = "public/404.html";
+				this->_status_code = 404;
+			}
 		}
-		catch (const std::out_of_range& e)
-		{
-			path_to_index = this->_config.get_normal_directive("root").front() + "/";
-		}
-		try
-		{
-			path_to_index.append(this->_config.get_location_directive(closest_match, "index").front());
-		}
-		catch (const std::out_of_range& e)
-		{
-			path_to_index.append(this->_config.get_normal_directive("index").front());
-		}
-		std::cout << path_to_index << std::endl;
-		return (path_to_index);
+		std::cout << "path_to_file : " << path_to_file << std::endl;
+		return (path_to_file);
 	}
 
 	void	Response::read_config(string file_name)
@@ -78,13 +100,9 @@ namespace ft
 			while (getline(config_file, line))
 				this->_content = this->_content.append(line) + "\n";
 			config_file.close();
-			this->_status_code = 200;
 		}
 		else
-		{
-			this->_status_code = 404;
-			std::cout << "404 not found : '" << file_name <<"' not found" << std::endl;
-		}
+			std::cout << "SOMETHING REALLY BAD HAPPEND!!!" << std::endl;
 	}
 
 	void	Response::prepend_header(void)
@@ -107,7 +125,7 @@ namespace ft
 
 	void	Response::handle_get(void)
 	{
-		this->read_config(this->get_path_to_index());
+		this->read_config(this->get_path_to_file());
 		this->prepend_header();
 		std::cout << "==========index=========" << std::endl;
 		std::cout << this->_content << std::endl;
