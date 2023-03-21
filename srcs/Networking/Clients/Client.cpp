@@ -2,46 +2,35 @@
 
 namespace	ft
 {
-	Client::Client(int port, int fd) : _request(fd)
+	Client::Client(ServerConfig& config, int fd)
 	{
-		this->_port = port;
-		this->_fd = fd;
+		this->_request = new Request(fd);
+		this->_response = new Response(config, *this->_request);
 	}
 
-	Client::~Client() {};
-
-	int	Client::get_port(void) const
+	Client::~Client()
 	{
-		return (this->_port);
+		delete this->_request;
+		delete this->_response;
+	};
+
+	bool	Client::received_request(void)
+	{
+		return (this->_request->received());
 	}
 
-	int	Client::get_fd(void) const
+	bool	Client::sent_response(void)
 	{
-		return (this->_fd);
+		return (this->_response->sent());
 	}
 
-	Request&	Client::get_request(void)
+	void	Client::handle_request(void)
 	{
-		return (this->_request);
+		this->_request->read_buffer();
 	}
 
-	int	Client::get_pollfd_index(void) const
+	void	Client::handle_response(void)
 	{
-		return (this->_pollfd_index);
-	}
-
-	void	Client::set_pollfd_index(int pollfd_index)
-	{
-		this->_pollfd_index = pollfd_index;
-	}
-
-	void	Client::read_buffer(void)
-	{
-		this->_request.read_buffer();
-	}
-
-	void	Client::clear_buffer(void)
-	{
-		this->_request.clear_buffer();
+		this->_response->handle_methods();
 	}
 }

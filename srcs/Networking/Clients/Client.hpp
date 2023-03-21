@@ -2,34 +2,27 @@
 # define CLIENT_HPP
 
 # include <iostream>
-# include <poll.h>
+# include "../Servers/ServerConfig.hpp"
 # include "Request.hpp"
+# include "Response.hpp"
 
 namespace	ft
 {
 	class	Client
 	{
 		public:
-			typedef struct pollfd	pollFdType;
-
-			Client(int port, int fd);
+			Client(ServerConfig& config, int fd);
 			~Client();
 
-			int			get_port(void) const;
-			int			get_fd(void) const;
-			Request&	get_request(void);
-			int			get_pollfd_index(void) const;
+			bool	received_request(void);
+			bool	sent_response(void);
 
-			void		set_pollfd_index(int pollfd_index);
-
-			void		read_buffer(void);
-			void		clear_buffer(void);
+			void	handle_request(void);
+			void	handle_response(void);
 
 		private:
-			int			_port;
-			int			_fd;
-			Request		_request;
-			int			_pollfd_index;
+			Request*	_request;
+			Response*	_response;
 	};
 }
 

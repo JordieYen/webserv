@@ -36,8 +36,8 @@ namespace ft
 
 	void	ErrorChecker::check_key(configIterType& line)
 	{
-		const char*		key_checks[] = {"listen", "autoindex", "access_log", "root", "index", "return", "location", "}"};
-		stringCheckType	checks(key_checks, key_checks + 8);
+		const char*		key_checks[] = {"listen", "access_log", "root", "index", "return", "location", "}"};
+		stringCheckType	checks(key_checks, key_checks + 7);
 		bool			is_valid = false;
 		static bool		is_location_block;
 		

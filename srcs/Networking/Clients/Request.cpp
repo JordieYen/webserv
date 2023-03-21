@@ -5,7 +5,7 @@ namespace	ft
 	Request::Request(int fd)
 	{
 		this->_client_fd = fd;
-		this->_has_read = false;
+		this->_received = false;
 	}
 
 	Request::~Request(void) {}
@@ -34,20 +34,23 @@ namespace	ft
 	{
 		istringstream	buffer_stream(this->_content);
 		string			line;
+		string			path;
 
 		getline(buffer_stream, line);
 		this->_headers.insert(make_pair("method", line.substr(0, line.find_first_of(" "))));
 		line = line.substr(line.find_first_of(" ") + 1, line.length());
-		this->_headers.insert(make_pair("path", line.substr(0, line.find_first_of(" "))));
+		path = line.substr(0, line.find_first_of(" "));
+		path = path.substr(0, path.length() - (path.back() == '/'));
+		this->_headers.insert(make_pair("path", path));
 
 		getline(buffer_stream, line);
 		this->_headers.insert(make_pair("host", line.substr(line.find_first_of(" ") + 1, line.length())));
-		this->_has_read = true;
+		this->_received = true;
 	}
 
 	void	Request::clear_buffer(void)
 	{
-		this->_has_read = false;
+		this->_received = false;
 		this->_content.clear();
 		this->_headers.clear();
 	}
@@ -62,8 +65,8 @@ namespace	ft
 		return (this->_headers.at(key));
 	}
 
-	bool	Request::has_read(void) const
+	bool	Request::received(void) const
 	{
-		return (this->_has_read);
+		return (this->_received);
 	}
 }

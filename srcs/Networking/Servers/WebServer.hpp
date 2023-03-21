@@ -15,8 +15,6 @@ using std::string;
 using std::vector;
 using std::map;
 using std::make_pair;
-using std::cout; //NEVER REMOVE ASSHOLES
-using std::endl; //NEVER REMOVE ASSHOLES
 
 namespace	ft
 {
@@ -35,17 +33,21 @@ namespace	ft
 			template <class T>
 			void	log(string desc, T value)
 			{
-				cout << desc << " : " << value << endl;
+				std::cout << desc << " : " << value << std::endl;
 			};
 
 			void	setup(void);
 			void	launch(void);
 
 		private:
+			bool			current_pollfd_is(int event);
+			void			set_current_pollfd_to(int event);
+
 			ConfigParser	_parser;
-			pollFdArrayType	_pollfds;
 			serverMapType	_servers;
 			clientArrayType	_clients;
+			pollFdArrayType	_pollfds;
+			int				_current_pollfd_index;
 	};
 }
 

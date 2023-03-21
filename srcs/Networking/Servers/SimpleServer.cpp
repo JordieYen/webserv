@@ -21,6 +21,11 @@ namespace	ft
 		delete this->_socket;
 	}
 
+	ServerConfig&	SimpleServer::get_config(void)
+	{
+		return (this->_config);
+	}
+
 	int	SimpleServer::get_port(void) const
 	{
 		return (this->_port);
@@ -36,37 +41,13 @@ namespace	ft
 		return (this->_socket->get_fd());
 	}
 
-	int	SimpleServer::get_pollfd_index(void) const
-	{
-		return (this->_pollfd_index);
-	}
-
-	void	SimpleServer::set_pollfd_index(int pollfd_index)
-	{
-		this->_pollfd_index = pollfd_index;
-	}
-
 	int	SimpleServer::accept_connection(void)
 	{
 		struct sockaddr_in	address = this->_socket->get_address();
 		int					addrlen = sizeof(address);
 		int					fd;
 
-		std::cout << "Accepting fd: " << std::endl;
 		fd = accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen);
-		std::cout << "Accepted fd: " << fd << std::endl;
 		return (fd);
-	}
-
-	// void	SimpleServer::handler(void)
-	// {
-	// 	std::cout << this->_content << std::endl;
-	// }
-	
-	void	SimpleServer::respond(Request& request)
-	{
-		Response response(this->_config, request);
-
-		response.handle_methods();
 	}
 }

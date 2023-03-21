@@ -28,13 +28,14 @@ namespace ft
 
 			int		get_client_fd(void) const;
 			string	get_header(string key) const;
-			bool	has_read(void) const;
+			bool	received(void) const;
 
 		private:
 			int					_client_fd;
 			string				_content;
 			map<string, string>	_headers;
-			bool				_has_read;
+
+			bool				_received;
 	};
 }
 

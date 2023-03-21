@@ -20,6 +20,16 @@ namespace ft
 		}
 	}
 
+	bool	WebServer::current_pollfd_is(int event)
+	{
+		return (this->_pollfds[this->_current_pollfd_index].revents & event);
+	}
+
+	void	WebServer::set_current_pollfd_to(int event)
+	{
+		this->_pollfds[this->_current_pollfd_index].events = event;
+	}
+
 	void	WebServer::setup(void)
 	{
 		this->_parser.read_config();
@@ -36,97 +46,85 @@ namespace ft
 			new_pollfd.fd = new_server->get_server_fd();
 			new_pollfd.events = POLLIN;
 			this->_pollfds.push_back(new_pollfd);
-			new_server->set_pollfd_index(this->_pollfds.size() - 1);
 			this->_servers.insert(make_pair(new_server->get_port(), new_server));
 		}
 	}
 
 	void	WebServer::launch(void)
 	{
-		int i = 0;
 		while (true)
 		{
 			int rc = poll(this->_pollfds.data(), this->_pollfds.size(), 1000);
 			if (rc < 0)
 				exit(0);
-			log("Poll loop", "");
-			log("Poll size", this->_pollfds.size());
+			// log("Poll loop", "");
+			// log("Poll size", this->_pollfds.size());
+			this->_current_pollfd_index = 0;
 			for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
 			{
-				if (this->_pollfds[server->second->get_pollfd_index()].revents == 0)
-				{
-					log("server revents == 0", "");
-					continue;
-				}
-					
-				log("Poll size", this->_pollfds.size());
-				log("Server checking with fd", server->second->get_server_fd());
-				printf("server revents = %s%s%s at fd %d\n",
-					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLIN) ? "POLLIN" : "",
-					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLOUT) ? "POLLOUT" : "",
-					(this->_pollfds[server->second->get_pollfd_index()].revents & POLLHUP) ? "POLLHUP" : "", server->second->get_server_fd());
+				// log("Poll size", this->_pollfds.size());
+				// log("Server checking with fd", server->second->get_server_fd());
+				// printf("server revents = %s%s%s at fd %d\n",
+				// 	this->current_pollfd_is(POLLIN) ? "POLLIN" : "",
+				// 	this->current_pollfd_is(POLLOUT) ? "POLLOUT" : "",
+				// 	this->current_pollfd_is(POLLHUP) ? "POLLHUP" : "", server->second->get_server_fd());
 
-				if (this->_pollfds[server->second->get_pollfd_index()].revents & POLLIN)
+				if (!this->current_pollfd_is(0) && this->current_pollfd_is(POLLIN))
 				{
 					int	client_fd = server->second->accept_connection();
 					if (client_fd != -1)
 					{
-						log("Server pollin...", "");
-						Client*		new_client = new Client(server->second->get_port(), client_fd);
+						// log("Server pollin...", "");
+						Client*		new_client = new Client(server->second->get_config(), client_fd);
 						pollFdType	new_pollfd;
 
 						new_pollfd.fd = client_fd;
 						new_pollfd.events = POLLIN;
 						this->_pollfds.push_back(new_pollfd);
-						new_client->set_pollfd_index(this->_pollfds.size() - 1);
 						this->_clients.push_back(new_client);
-						log("Client created...", "");
+						// log("Client created...", "");
 					}
 				}
+				this->_current_pollfd_index++;
 			}
-			for (clientArrayType::iterator client = this->_clients.begin(); client != this->_clients.end();)
+			for (clientArrayType::iterator client = this->_clients.begin(); client != this->_clients.end(); client++)
 			{
-				log("Client loop...", "");
-				log("pollfd index", (*client)->get_pollfd_index());
-				if (this->_pollfds[(*client)->get_pollfd_index()].revents == 0)
+				// log("Client loop...", "");
+				// log("pollfd index", this->_current_pollfd_index);
+				if (!this->current_pollfd_is(0))
 				{
-					log("client revents == 0, fd", (*client)->get_fd());
-					log("current pollfd", (*client)->get_pollfd_index());
-					client++;
-				}
-				else
-				{
-					log("Poll size", this->_pollfds.size());
-					log("Client checking with fd", (*client)->get_fd());
-					printf("client revents = %s%s%s at fd %d\n",
-						(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLIN) ? "POLLIN" : "",
-						(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLOUT) ? "POLLOUT" : "",
-						(this->_pollfds[(*client)->get_pollfd_index()].revents & POLLHUP) ? "POLLHUP" : "", (*client)->get_fd());
+					// log("Poll size", this->_pollfds.size());
+					// printf("client revents = %s%s%s at fd %d\n",
+					// 	this->current_pollfd_is(POLLIN) ? "POLLIN" : "",
+					// 	this->current_pollfd_is(POLLOUT) ? "POLLOUT" : "",
+					// 	this->current_pollfd_is(POLLHUP) ? "POLLHUP" : "", (*client)->get_fd());
 
-					log("================", "");
-					if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLHUP)
+					// log("================", "");
+					Client*	current_client = (*client);
+
+					if (this->current_pollfd_is(POLLHUP))
 					{
-						log("Client pollhup", "");
-						this->_pollfds.erase(this->_pollfds.begin() + (*client)->get_pollfd_index());
-						client = this->_clients.erase(this->_clients.begin() + i);
+						// log("Client pollhup", "");
+						// log("current_pollfd_index", this->_current_pollfd_index);
+						// log("pollfd_size", this->_pollfds.size());
+						this->_pollfds.erase(this->_pollfds.begin() + this->_current_pollfd_index--);
+						client = this->_clients.erase(client) - 1;
 					}
-					else if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLIN)
+					else if (this->current_pollfd_is(POLLIN))
 					{
-						log("Client pollin", "");
-						(*client)->read_buffer();
-						if ((*client)->get_request().has_read())
-							this->_pollfds[(*client)->get_pollfd_index()].events = POLLOUT;
-						client++;
+						// log("Client pollin", "");
+						current_client->handle_request();
+						if (current_client->received_request())
+							this->set_current_pollfd_to(POLLOUT);
 					}
-					else if (this->_pollfds[(*client)->get_pollfd_index()].revents & POLLOUT)
+					else if (this->current_pollfd_is(POLLOUT))
 					{
-						log("Client pollout at", (*client)->get_fd());
-						this->_servers[(*client)->get_port()]->respond((*client)->get_request());
-						(*client)->clear_buffer();
-						this->_pollfds[(*client)->get_pollfd_index()].events = POLLIN;
-						client++;
+						current_client->handle_response();
+						if (current_client->sent_response())
+							this->set_current_pollfd_to(POLLIN);
 					}
 				}
+				this->_current_pollfd_index++;
 			}
 		}
 	}
