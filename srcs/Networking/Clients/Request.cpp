@@ -14,7 +14,7 @@ namespace	ft
 	{
 		char*	buffer;
 
-		buffer = static_cast<char*>(malloc(30000 * sizeof(char)));
+		buffer = static_cast<char*>(calloc(30000 * sizeof(char), sizeof(char)));
 		recv(this->_client_fd, buffer, 30000, 0);
 		std::cout << "buffer: [" << buffer << "]" << std::endl;
 		this->_content.append(string(buffer));
@@ -40,7 +40,8 @@ namespace	ft
 		this->_headers.insert(make_pair("method", line.substr(0, line.find_first_of(" "))));
 		line = line.substr(line.find_first_of(" ") + 1, line.length());
 		path = line.substr(0, line.find_first_of(" "));
-		path = path.substr(0, path.length() - (path.back() == '/'));
+		if (path.front() != '/' && path.back() == '/')
+			path = path.substr(0, path.length() - 1);
 		this->_headers.insert(make_pair("path", path));
 
 		getline(buffer_stream, line);

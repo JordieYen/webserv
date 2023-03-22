@@ -4,13 +4,7 @@ namespace ft
 {
 	Response::Response(ServerConfig& config, Request& request) : _config(config), _request(request)
 	{
-		// std::cout << "method: " << request.get_header("method") << std::endl;
-		// std::cout << "path: " << request.get_header("path") << std::endl;
-		// std::cout << "host: " << request.get_header("host") << std::endl;
-		this->_root = "";
 		this->_is_autoindex = false;
-		this->_status_code = 0;
-		this->_content = "";
 		this->_sent = false;
 	}
 
@@ -41,17 +35,17 @@ namespace ft
 		ServerConfig::locationMapType::reverse_iterator	path_to_check = location_map.rbegin();
 		string											closest_match = "/";
 
-		while (path_to_check != location_map.rend())
+		while (path_to_check != location_map.rend() && closest_match.compare("/") == 0)
 		{
 			if (request_path.find(path_to_check->first) == 0)
 			{
-				closest_match = path_to_check->first;
-				break;
+				if (path_to_check->second.get_match_type() == LocationBlock::PREFIX || request_path.length() == path_to_check->first.length())
+					closest_match = path_to_check->first;
 			}
 			path_to_check++;
 		}
 		if (closest_match.empty())
-			std::cout << "path not found" << std::endl;
+			std::cout << "SOMETHING REALLY BAD HAPPEND!!!" << std::endl;
 		return (closest_match);
 	}
 
@@ -104,7 +98,6 @@ namespace ft
 				this->_status_code = 404;
 			}
 		}
-		std::cout << "path_to_file : " << path_to_file << std::endl;
 		return (path_to_file);
 	}
 
@@ -114,6 +107,7 @@ namespace ft
 		DIR*			dir;
 		struct dirent*	dir_entries;
 
+		this->_content.append("\t\t\t<div class=\"table\">");
 		dir = opendir(dir_path.c_str());
 		while ((dir_entries = readdir(dir)) != NULL)
 		{
@@ -140,6 +134,18 @@ namespace ft
 		closedir(dir);
 	}
 
+	void	Response::handle_autoindex(string line)
+	{
+		if (line.compare("\t\t\t\t<p class=\"header_title\"></p>") == 0)
+		{
+			this->_content.append(line.substr(0, line.length() - 4) + this->_root + "</p>");
+		}
+		else if (line.compare("\t\t\t<div class=\"table\">") == 0)
+			this->append_icons();
+		else
+			this->_content.append(line + "\n");
+	}
+
 	void	Response::read_config(string file_name)
 	{
 		string		line;
@@ -149,9 +155,10 @@ namespace ft
 		{
 			while (getline(config_file, line))
 			{
-				this->_content.append(line + "\n");
-				if (this->_is_autoindex && line == "\t\t\t<div class=\"table\">")
-					this->append_icons();
+				if (this->_is_autoindex)
+					this->handle_autoindex(line);
+				else
+					this->_content.append(line + "\n");
 			}
 			config_file.close();
 		}
@@ -216,6 +223,9 @@ namespace ft
 	{
 		if (this->_sent)
 		{
+			this->_root.clear();
+			this->_is_autoindex = false;
+
 			this->_sent = false;
 			this->_content.clear();
 			this->_request.clear_buffer();

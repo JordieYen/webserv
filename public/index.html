@@ -6,11 +6,48 @@
 				background-image: url('eulee_background.jpg');
 				background-size: cover;
 				height: 100%;
+				overflow: hidden;
+			}
+			body	{
+				height: 100%;
+				width: 100%;
+				margin: 0 auto;
+			}
+			.login_form	{
+				position: relative;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				text-align: center;
+			}
+			.login_field	{
+				border-radius: 5px;
+				margin-bottom: 9px;
+				border: none;
+				padding: 5px 7px;
+				color: white;
+				font-family: 'Lucida Grande';
+				line-height: 20px;
+				backdrop-filter: blur(14px);
+				background: rgba(215, 230, 255, 0.75);
+			}
+			.login_field:focus	{
+				outline-width: 0;
+			}
+			::placeholder	{
+				color: rgba(255, 255, 255, 0.75);
+				font-family: 'Lucida Grande';
 			}
 		</style>
 	</head>
 	<body>
-		<h1>My First Heading</h1>
-		<p>My first paragraph.</p>
+		<div class="login_form">
+			<form action="/login" method="post" enctype="multipart/form-data">
+				<input class="login_field" name="name" type="text" placeholder="Name"><br>
+				<input class="login_field" name="password" type="password" placeholder="Enter Password"><br>
+				<input name="file" type="file">
+				<input type="submit" hidden>
+			</form>
+		</div>
 	</body>
 </html>

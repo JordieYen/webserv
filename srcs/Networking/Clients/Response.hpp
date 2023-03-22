@@ -32,7 +32,9 @@ namespace	ft
 			string	get_path_to(string directive, string match);
 			string	get_path_to_index(string root, string match);
 			string	get_path_to_file(void);
+
 			void	append_icons(void);
+			void	handle_autoindex(string line);
 			void	read_config(string file_name);
 
 			void	prepend_header(void);
