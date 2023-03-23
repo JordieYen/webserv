@@ -114,7 +114,7 @@ namespace ft
 			string	dir_name = dir_entries->d_name;
 			string	full_path = this->_request.get_header("path");
 
-			if (full_path.back() != '/')
+			if (full_path[full_path.length() - 1] != '/')
 				full_path.push_back('/');
 			full_path += dir_name;
 

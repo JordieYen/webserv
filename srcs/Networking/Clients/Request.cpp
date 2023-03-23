@@ -40,7 +40,7 @@ namespace	ft
 		this->_headers.insert(make_pair("method", line.substr(0, line.find_first_of(" "))));
 		line = line.substr(line.find_first_of(" ") + 1, line.length());
 		path = line.substr(0, line.find_first_of(" "));
-		if (path.front() != '/' && path.back() == '/')
+		if (path[0] != '/' && path[path.length() - 1] == '/')
 			path = path.substr(0, path.length() - 1);
 		this->_headers.insert(make_pair("path", path));
 
