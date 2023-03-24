@@ -5,7 +5,7 @@ namespace	ft
 	Client::Client(ServerConfig& config, int fd)
 	{
 		this->_request = new Request(fd);
-		this->_response = new Response(config, *this->_request);
+		this->_response = new Response(config, this->_request);
 	}
 
 	Client::~Client()

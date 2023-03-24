@@ -35,7 +35,8 @@ namespace ft
 		private:
 			int					_client_fd;
 			string				_content;
-			map<string, string>	_headers;
+			string				_method;
+			string				_path;
 
 			bool				_received;
 	};

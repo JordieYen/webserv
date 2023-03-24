@@ -2,8 +2,9 @@
 
 namespace ft
 {
-	Response::Response(ServerConfig& config, Request& request) : _config(config), _request(request)
+	Response::Response(ServerConfig& config, Request* request) : _config(config)
 	{
+		this->_request = request;
 		this->_is_autoindex = false;
 		this->_sent = false;
 	}
@@ -30,7 +31,7 @@ namespace ft
 
 	string	Response::get_closest_match(void)
 	{
-		string											request_path = this->_request.get_header("path");
+		string											request_path = this->_request->get_header("path");
 		ServerConfig::locationMapType					location_map = this->_config.get_location_map();
 		ServerConfig::locationMapType::reverse_iterator	path_to_check = location_map.rbegin();
 		string											closest_match = "/";
@@ -77,7 +78,7 @@ namespace ft
 
 	string	Response::get_path_to_file(void)
 	{
-		string	request_path = this->_request.get_header("path");
+		string	request_path = this->_request->get_header("path");
 		string	closest_match = this->get_closest_match();
 		string	path_to_file;
 
@@ -112,7 +113,7 @@ namespace ft
 		while ((dir_entries = readdir(dir)) != NULL)
 		{
 			string	dir_name = dir_entries->d_name;
-			string	full_path = this->_request.get_header("path");
+			string	full_path = this->_request->get_header("path");
 
 			if (full_path[full_path.length() - 1] != '/')
 				full_path.push_back('/');
@@ -193,7 +194,7 @@ namespace ft
 			this->_sent = true;
 		else
 			length_to_send = 100000;
-		send(this->_request.get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0);
+		send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0);
 		string trimmed_content = this->_content.substr(length_to_send);
 		this->_content.clear();
 		this->_content = trimmed_content;
@@ -232,13 +233,13 @@ namespace ft
 
 	void	Response::handle_methods(void)
 	{
-		if (this->_request.get_header("method") == "GET")
+		if (this->_request->get_header("method") == "GET")
 			this->handle_get();
-		else if (this->_request.get_header("method") == "POST")
+		else if (this->_request->get_header("method") == "POST")
 			this->handle_post();
-		else if (this->_request.get_header("method") == "DELETE")
+		else if (this->_request->get_header("method") == "DELETE")
 			this->handle_delete();
-		else if (this->_request.get_header("method") == "BAD REQUEST")
+		else if (this->_request->get_header("method") == "BAD REQUEST")
 			this->handle_bad_request();
 	}
 
@@ -251,7 +252,7 @@ namespace ft
 
 			this->_sent = false;
 			this->_content.clear();
-			this->_request.clear_buffer();
+			this->_request->clear_buffer();
 			return (true);
 		}
 		return (false);

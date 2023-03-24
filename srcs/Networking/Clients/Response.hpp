@@ -21,7 +21,7 @@ namespace	ft
 	class Response
 	{
 		public:
-			Response(ServerConfig& config, Request& request);
+			Response(ServerConfig& config, Request* request);
 			~Response(void);
 
 			bool	path_is_valid_file(string path);
@@ -50,7 +50,7 @@ namespace	ft
 
 		private:
 			ServerConfig&	_config;
-			Request&		_request;
+			Request*		_request;
 
 			string			_root;
 			bool			_is_autoindex;
