@@ -10,6 +10,18 @@ namespace	ft
 
 	Request::~Request(void) {}
 
+	void	Request::validate_content(void)
+	{
+		if (this->_content.find("GET") == std::string::npos && this->_content.find("POST") == std::string::npos && this->_content.find("DELETE") == std::string::npos)
+		{
+			std::cout << "invalid request!" << std::endl;
+			this->_content.clear();
+			this->_received = true;
+			this->_content.append("BAD REQUEST");
+		}
+		// else if ()
+	}
+
 	void	Request::read_buffer(void)
 	{
 		char*	buffer;
@@ -19,13 +31,16 @@ namespace	ft
 		std::cout << "buffer: [" << buffer << "]" << std::endl;
 		this->_content.append(string(buffer));
 		free(buffer);
+		if (this->_content == "\r\n")
+			this->_content.clear();
 		// std::cout << "READING..." << std::endl;
 		// std::cout << "============================" << std::endl;
 		// std::cout << "Content: [" << this->_content << "]" << std::endl;
 		// std::cout << "============================" << std::endl;
 		if (this->_content.find("\r\n\r\n") != string::npos)
 		{
-			// std::cout << "Content: [" << this->_content << "]" << std::endl;
+			// std::cout << "DONE Content: [" << this->_content << "]" << std::endl;
+			this->validate_content();
 			this->parse_buffer();
 		}
 	}
@@ -36,6 +51,11 @@ namespace	ft
 		string			line;
 		string			path;
 
+		if (this->_content == "BAD REQUEST")
+		{
+			this->_headers.insert(make_pair("method", this->_content));
+			return;
+		}
 		getline(buffer_stream, line);
 		this->_headers.insert(make_pair("method", line.substr(0, line.find_first_of(" "))));
 		line = line.substr(line.find_first_of(" ") + 1, line.length());

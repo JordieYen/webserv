@@ -22,6 +22,8 @@ namespace ft
 			Request(int fd);
 			~Request(void);
 		
+			void	validate_content(void);
+
 			void	read_buffer(void);
 			void	parse_buffer(void);
 			void	clear_buffer(void);

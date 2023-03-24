@@ -40,9 +40,10 @@ namespace	ft
 			void	prepend_header(void);
 			void	send_to_client(void);
 
-			void	handle_get();
-			// void	handle_post();
-			// void	handle_delete();
+			void	handle_get(void);
+			void	handle_post(void);
+			void	handle_delete(void);
+			void	handle_bad_request(void);
 			void	handle_methods(void);
 
 			bool	sent(void);

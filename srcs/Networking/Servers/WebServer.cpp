@@ -15,9 +15,9 @@ namespace ft
 	WebServer::~WebServer(void)
 	{
 		for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
-		{
 			delete server->second;
-		}
+		for (clientArrayType::iterator client = this->_clients.begin(); client != this->_clients.end(); client++)
+			delete *client;
 	}
 
 	bool	WebServer::current_pollfd_is(int event)

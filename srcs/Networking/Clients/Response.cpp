@@ -209,14 +209,37 @@ namespace ft
 		this->send_to_client();
 	}
 
+	void	Response::handle_post(void)
+	{
+		
+	}
+
+	void	Response::handle_delete(void)
+	{
+		
+	}
+
+	void	Response::handle_bad_request(void)
+	{
+		if (this->_content.empty())
+		{
+			this->_status_code = 400;
+			this->read_config("public/404.html");
+			this->prepend_header();
+		}
+		this->send_to_client();
+	}
+
 	void	Response::handle_methods(void)
 	{
 		if (this->_request.get_header("method") == "GET")
-			handle_get();
-		// else if (request.get_header("method") == "POST")
-		// 	handle_post();
-		// else if (request.get_header("method") == "DELETE")
-		// 	handle_delete();
+			this->handle_get();
+		else if (this->_request.get_header("method") == "POST")
+			this->handle_post();
+		else if (this->_request.get_header("method") == "DELETE")
+			this->handle_delete();
+		else if (this->_request.get_header("method") == "BAD REQUEST")
+			this->handle_bad_request();
 	}
 
 	bool	Response::sent(void)
