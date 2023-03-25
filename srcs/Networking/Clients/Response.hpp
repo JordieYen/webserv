@@ -5,6 +5,7 @@
 
 # include <iostream>
 # include <string>
+# include <cstring>
 # include <sstream>
 # include <fstream>
 # include <sys/stat.h>
@@ -35,6 +36,7 @@ namespace	ft
 
 			void	append_icons(void);
 			void	handle_autoindex(string line);
+			void	handle_error(void);
 			void	read_config(string file_name);
 
 			void	prepend_header(void);

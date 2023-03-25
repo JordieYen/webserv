@@ -95,7 +95,7 @@ namespace ft
 				path_to_file.append(request_path.substr(closest_match.length() + (request_path[closest_match.length()] == '/')));
 			if (!this->path_is_valid_file(path_to_file))
 			{
-				path_to_file = "public/404.html";
+				path_to_file = "public/error.html";
 				this->_status_code = 404;
 			}
 		}
@@ -147,6 +147,27 @@ namespace ft
 			this->_content.append(line + "\n");
 	}
 
+	void	Response::handle_error(void)
+	{
+		const int			status_code_checks[] = {400, 401, 404};
+		const char*			error_message_checks[] = {"Bad Request", "Unauthorized", "Not Found"};
+		std::vector<int>	status_codes(status_code_checks, status_code_checks + 3);
+		std::vector<string>	error_messages(error_message_checks, error_message_checks + 3);
+		stringstream		stream;
+		string				code;
+
+		for (size_t i = 0; i < status_codes.size(); i++)
+		{
+			if (status_codes[i] == this->_status_code)
+			{
+				stream << status_codes[i];
+				stream >> code;
+				this->_content.append("\t\t<h1>" + code + " " + error_messages[i] + "</h1>\n");
+				return ;
+			}
+		}
+	}
+
 	void	Response::read_config(string file_name)
 	{
 		string		line;
@@ -158,6 +179,8 @@ namespace ft
 			{
 				if (this->_is_autoindex)
 					this->handle_autoindex(line);
+				else if ((this->_status_code >= 400 && this->_status_code < 500) && line.compare("\t<body>") == 0)
+					this->handle_error();
 				else
 					this->_content.append(line + "\n");
 			}
@@ -225,7 +248,7 @@ namespace ft
 		if (this->_content.empty())
 		{
 			this->_status_code = 400;
-			this->read_config("public/404.html");
+			this->read_config("public/error.html");
 			this->prepend_header();
 		}
 		this->send_to_client();
@@ -239,7 +262,7 @@ namespace ft
 			this->handle_post();
 		else if (this->_request->get_header("method") == "DELETE")
 			this->handle_delete();
-		else if (this->_request->get_header("method") == "BAD REQUEST")
+		else
 			this->handle_bad_request();
 	}
 

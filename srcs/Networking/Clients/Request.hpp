@@ -2,16 +2,22 @@
 # define REQUEST_HPP
 
 # include <cstdlib>
+# include <cstring>
 
 # include <iostream>
 # include <sstream>
+# include <fstream>
 # include <map>
+# include <vector>
 # include <unistd.h>
 # include <sys/socket.h>
 
 using std::string;
+using std::ifstream;
+using std::stringstream;
 using std::istringstream;
 using std::map;
+using std::vector;
 using std::make_pair;
 
 namespace ft
@@ -33,10 +39,14 @@ namespace ft
 			bool	received(void) const;
 
 		private:
+			void	set_bad_request(void);
+
 			int					_client_fd;
 			string				_content;
+			string				_body;
 			string				_method;
 			string				_path;
+			map<string, string>	_content_context;
 
 			bool				_received;
 	};
