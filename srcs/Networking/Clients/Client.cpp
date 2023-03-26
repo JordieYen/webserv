@@ -26,7 +26,7 @@ namespace	ft
 
 	void	Client::handle_request(void)
 	{
-		this->_request->read_buffer();
+		this->_request->handle_request();
 	}
 
 	void	Client::handle_response(void)

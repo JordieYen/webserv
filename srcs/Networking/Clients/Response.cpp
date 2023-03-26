@@ -235,12 +235,12 @@ namespace ft
 
 	void	Response::handle_post(void)
 	{
-		
+
 	}
 
 	void	Response::handle_delete(void)
 	{
-		
+
 	}
 
 	void	Response::handle_bad_request(void)
@@ -275,7 +275,7 @@ namespace ft
 
 			this->_sent = false;
 			this->_content.clear();
-			this->_request->clear_buffer();
+			this->_request->clear();
 			return (true);
 		}
 		return (false);
