@@ -34,6 +34,7 @@ namespace ft
 			int					get_client_fd(void) const;
 			string				get_header(string key) const;
 			map<string, string>	get_body_map(void) const;
+			map<string, string>	get_files_map(void) const;
 			bool				received(void) const;
 
 		private:
@@ -56,6 +57,7 @@ namespace ft
 			string				_path;
 
 			map<string, string>	_body;
+			map<string, string>	_files;
 
 			bool				_received;
 	};

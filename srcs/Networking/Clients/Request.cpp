@@ -12,14 +12,15 @@ namespace	ft
 
 	void	Request::read_from_client(void)
 	{
+		int		read_bytes;
 		char*	buffer = static_cast<char*>(calloc(65536 * sizeof(char), sizeof(char)));
 
-		if (recv(this->_client_fd, buffer, 65536, 0) < 0)
+		if ((read_bytes = recv(this->_client_fd, buffer, 65536, 0)) < 0)
 			std::cout << "Error : recv returns error..." << std::endl;
 		if (strcmp(buffer, "\r\n") != 0 || !this->_content.empty())
-			this->_content.append(buffer);
+			this->_content.append(buffer, read_bytes);
 		// std::cout << "====================" << std::endl;
-		// std::cout << buffer << std::endl;
+		// std::cout << this->_content << std::endl;
 		// std::cout << "====================" << std::endl;
 		free(buffer);
 	}
@@ -59,7 +60,7 @@ namespace	ft
 		stringstream	full_header(this->_content.substr(0, this->_content.find("\r\n\r\n")));
 		string			line;
 
-		getline(full_header, line, '\r');
+		getline(full_header, line);
 		stringstream	full_first_line(line);
 
 		full_first_line >> this->_method;
@@ -70,9 +71,9 @@ namespace	ft
 		const char*			content_context_checks[] = {"Content-Type", "Content-Length", "Transfer-Encoding"};
 		vector<string>		content_context(content_context_checks, content_context_checks + 3);
 
-		while (getline(full_header, line, '\r'))
+		while (getline(full_header, line))
 		{
-			line = line.substr(1);
+			line = line.substr(0, line.length() - 1);
 			for (vector<string>::iterator context = content_context.begin(); context != content_context.end(); context++)
 			{
 				if (line.find(*context) != string::npos)
@@ -143,30 +144,30 @@ namespace	ft
 
 	void	Request::parse_multipart_body(void)
 	{
-		stringstream	body_stream(this->_content);
-		string			line;
-		string			name;
-		string			value;
+		string	part;
+		string	first_line;
+		string	name;
 
-		while (getline(body_stream, line, '\r'))
+		while (this->_content.compare("\r\n") != 0)
 		{
-			line = line.substr(1);
-			if (line.find("Content-Disposition") != string::npos)
-				name = line.substr(line.find('=') + 2, line.length() - line.find('=') - 3);
-			else if (line.find("--" + this->_content_context.at("Form-Boundary:")) == 0 &&
-				!value.empty())
+			this->_content = this->_content.substr(this->_content.find("--" + this->_content_context.at("Form-Boundary:")) + this->_content_context.at("Form-Boundary:").length() + 4);
+			if (this->_content.compare("\r\n") != 0)
 			{
-				this->_body.insert(make_pair(name, value));
+				part = this->_content.substr(0, this->_content.find("--" + this->_content_context.at("Form-Boundary:")));
+				first_line = part.substr(0, part.find("\r\n"));
+				if (first_line.find("filename") != string::npos)
+				{
+					name = first_line.substr(first_line.find_last_of('=') + 2, first_line.length() - first_line.find_last_of('=') - 3);
+					this->_files.insert(make_pair(name, part.substr(part.find("\r\n\r\n") + 4)));
+				}
+				else
+				{
+					name = first_line.substr(first_line.find('=') + 2, first_line.length() - first_line.find('=') - 3);
+					this->_body.insert(make_pair(name, part.substr(part.find("\r\n\r\n") + 4)));
+				}
 				name.clear();
-				value.clear();
 			}
-			else if (!name.empty())
-				value.append(line);
 		}
-		// for (std::map<string, string>::iterator it = this->_body.begin(); it != this->_body.end(); it++)
-		// {
-		// 	std::cout << "[" << it->first << "]=[" << it->second << "]" << std::endl;
-		// }
 		this->_received = true;
 	}
 
@@ -221,6 +222,11 @@ namespace	ft
 	map<string, string>	Request::get_body_map() const
 	{
 		return (this->_body);
+	}
+
+	map<string, string>	Request::get_files_map() const
+	{
+		return (this->_files);
 	}
 
 	bool	Request::received(void) const

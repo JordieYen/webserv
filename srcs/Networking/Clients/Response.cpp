@@ -168,14 +168,14 @@ namespace ft
 		}
 	}
 
-	void	Response::read_config(string file_name)
+	void	Response::read_file(string file_name)
 	{
 		string		line;
-		ifstream	config_file(file_name.c_str());
+		ifstream	file(file_name.c_str());
 
-		if (config_file.is_open())
+		if (file.is_open())
 		{
-			while (getline(config_file, line))
+			while (getline(file, line))
 			{
 				if (this->_is_autoindex)
 					this->handle_autoindex(line);
@@ -184,10 +184,31 @@ namespace ft
 				else
 					this->_content.append(line + "\n");
 			}
-			config_file.close();
+			file.close();
 		}
 		else
 			std::cout << "SOMETHING REALLY BAD HAPPEND!!!" << std::endl;
+	}
+
+	bool	Response::handle_return(void)
+	{
+		string	closest_match = this->get_closest_match();
+
+		this->_content.append("HTTP/1.1 301 Moved Permanently\r\n");
+		try
+		{
+			this->_content.append("Location: " + this->_config.get_location_directive(closest_match, "return").front() + "\r\n\r\n");
+			return (true);
+		}
+		catch (const std::out_of_range& e) {}
+		try
+		{
+			this->_content.append("Location: " + this->_config.get_normal_directive("return").front() + "\r\n\r\n");
+			return (true);
+		}
+		catch (const std::out_of_range& e) {}
+		this->_content.clear();
+		return (false);
 	}
 
 	void	Response::prepend_header(void)
@@ -227,15 +248,29 @@ namespace ft
 	{
 		if (this->_content.empty())
 		{
-			this->read_config(this->get_path_to_file());
-			this->prepend_header();
+			if (!this->handle_return())
+			{
+				this->read_file(this->get_path_to_file());
+				this->prepend_header();
+			}
 		}
 		this->send_to_client();
 	}
 
 	void	Response::handle_post(void)
 	{
+		string				closest_match = this->get_closest_match();
+		map<string, string>	files = this->_request->get_files_map();
 
+		for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
+		{
+			ofstream	new_file(this->get_path_to("root", closest_match) + "/" + file->first);
+
+			new_file << file->second;
+			new_file.close();
+		}
+		this->prepend_header();
+		this->send_to_client();
 	}
 
 	void	Response::handle_delete(void)
@@ -248,7 +283,7 @@ namespace ft
 		if (this->_content.empty())
 		{
 			this->_status_code = 400;
-			this->read_config("public/error.html");
+			this->read_file("public/error.html");
 			this->prepend_header();
 		}
 		this->send_to_client();

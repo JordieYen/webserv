@@ -15,6 +15,7 @@
 
 using std::string;
 using std::ifstream;
+using std::ofstream;
 using std::stringstream;
 
 namespace	ft
@@ -37,8 +38,9 @@ namespace	ft
 			void	append_icons(void);
 			void	handle_autoindex(string line);
 			void	handle_error(void);
-			void	read_config(string file_name);
+			void	read_file(string file_name);
 
+			bool	handle_return(void);
 			void	prepend_header(void);
 			void	send_to_client(void);
 

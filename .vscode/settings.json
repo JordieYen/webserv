@@ -77,5 +77,6 @@
 		"numeric": "cpp",
 		"random": "cpp",
 		"numbers": "cpp"
-	}
+	},
+	"terminal.integrated.scrollback": 100000000000
 }
