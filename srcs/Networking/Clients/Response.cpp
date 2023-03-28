@@ -29,6 +29,21 @@ namespace ft
 		return (length_stream.str());
 	}
 
+	string	Response::get_status_message()
+	{
+		switch (this->_status_code)
+		{
+			case 200:	return (string("200 OK"));
+			case 204:	return (string("204 No Content"));
+			case 301:	return (string("301 Moved Permanently"));
+			case 400:	return (string("400 Bad Request"));
+			case 404:	return (string("404 Not Found"));
+			case 405:	return (string("405 Method Not Allowed"));
+			case 413:	return (string("413 Payload Too Large"));
+		}
+		return (string("SOMETHING REALLY BAD HAPPENED!!!"));
+	}
+
 	string	Response::get_closest_match(void)
 	{
 		string											request_path = this->_request->get_header("path");
@@ -79,20 +94,17 @@ namespace ft
 	string	Response::get_path_to_file(void)
 	{
 		string	request_path = this->_request->get_header("path");
-		string	closest_match = this->get_closest_match();
 		string	path_to_file;
 
-		this->_status_code = 200;
 		if (this->path_is_valid_file(request_path))
 			path_to_file = request_path.substr(1);
 		else
 		{
-			this->_root = this->get_path_to("root", closest_match);
 			path_to_file = this->_root + "/";
-			if (closest_match == request_path)
-				path_to_file = this->get_path_to_index(path_to_file, closest_match);
+			if (this->_closest_match == request_path)
+				path_to_file = this->get_path_to_index(path_to_file, this->_closest_match);
 			else
-				path_to_file.append(request_path.substr(closest_match.length() + (request_path[closest_match.length()] == '/')));
+				path_to_file.append(request_path.substr(this->_closest_match.length() + (request_path[this->_closest_match.length()] == '/')));
 			if (!this->path_is_valid_file(path_to_file))
 			{
 				path_to_file = "public/error.html";
@@ -147,27 +159,6 @@ namespace ft
 			this->_content.append(line + "\n");
 	}
 
-	void	Response::handle_error(void)
-	{
-		const int			status_code_checks[] = {400, 401, 404};
-		const char*			error_message_checks[] = {"Bad Request", "Unauthorized", "Not Found"};
-		std::vector<int>	status_codes(status_code_checks, status_code_checks + 3);
-		std::vector<string>	error_messages(error_message_checks, error_message_checks + 3);
-		stringstream		stream;
-		string				code;
-
-		for (size_t i = 0; i < status_codes.size(); i++)
-		{
-			if (status_codes[i] == this->_status_code)
-			{
-				stream << status_codes[i];
-				stream >> code;
-				this->_content.append("\t\t<h1>" + code + " " + error_messages[i] + "</h1>\n");
-				return ;
-			}
-		}
-	}
-
 	void	Response::read_file(string file_name)
 	{
 		string		line;
@@ -179,8 +170,8 @@ namespace ft
 			{
 				if (this->_is_autoindex)
 					this->handle_autoindex(line);
-				else if ((this->_status_code >= 400 && this->_status_code < 500) && line.compare("\t<body>") == 0)
-					this->handle_error();
+				else if (this->_status_code != 200 && line.compare("\t<body>") == 0)
+					this->_content.append("\t\t<h1>" + this->get_status_message() + "</h1>\n");
 				else
 					this->_content.append(line + "\n");
 			}
@@ -192,12 +183,11 @@ namespace ft
 
 	bool	Response::handle_return(void)
 	{
-		string	closest_match = this->get_closest_match();
-
-		this->_content.append("HTTP/1.1 301 Moved Permanently\r\n");
+		this->_status_code = 301;
+		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
 		try
 		{
-			this->_content.append("Location: " + this->_config.get_location_directive(closest_match, "return").front() + "\r\n\r\n");
+			this->_content.append("Location: " + this->_config.get_location_directive(this->_closest_match, "return").front() + "\r\n\r\n");
 			return (true);
 		}
 		catch (const std::out_of_range& e) {}
@@ -207,6 +197,7 @@ namespace ft
 			return (true);
 		}
 		catch (const std::out_of_range& e) {}
+		this->_status_code = 200;
 		this->_content.clear();
 		return (false);
 	}
@@ -215,14 +206,11 @@ namespace ft
 	{
 		string	header = "HTTP/1.1 ";
 
-		switch (this->_status_code)
-		{
-			case 200:	header.append("200 OK\r\n"); break;
-			case 400:	header.append("400 Bad Request\r\n"); break;
-			case 403:	header.append("403 Forbidden\r\n"); break;
-			case 404:	header.append("404 Not Found\r\n"); break;
-		}
-		header.append("Content-Type: */*\r\n");
+		header.append(this->get_status_message() + "\r\n");
+		if (this->_request->get_header("path").find(".ico") != string::npos)
+			header.append("Content-Type: image/x-icon\r\n");
+		else
+			header.append("Content-Type: */*\r\n");
 		header.append("Content-Length: ");
 		header.append(this->get_content_length());
 		header.append("\r\n\r\n");
@@ -239,9 +227,69 @@ namespace ft
 		else
 			length_to_send = 100000;
 		send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0);
-		string trimmed_content = this->_content.substr(length_to_send);
-		this->_content.clear();
-		this->_content = trimmed_content;
+		this->_content = this->_content.substr(length_to_send);
+	}
+
+	bool	Response::check_error(void)
+	{
+		string			request_method = this->_request->get_header("method");
+		vector<string>	allowed_methods;
+
+		if (request_method.empty())
+			this->_status_code = 400;
+		else
+		{
+			if (request_method.compare("POST") == 0)
+			{
+				string	max_size_string;
+				try
+				{
+					max_size_string = this->_config.get_location_directive(this->_closest_match, "client_max_body_size").front();
+				}
+				catch (const std::out_of_range& e)
+				{
+					max_size_string = this->_config.get_normal_directive("client_max_body_size").front();
+				}
+				map<string, string>	files = this->_request->get_files_map();
+				stringstream		max_size_stream(max_size_string);
+				size_t				max_size;
+
+				max_size_stream >> max_size;
+				for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
+				{
+					if (file->second.length() > max_size * 1000000)
+					{
+						this->_status_code = 413;
+						return (true);
+					}
+				}
+			}
+			try
+			{
+				allowed_methods = this->_config.get_location_directive(this->_closest_match, "allowed_methods");	
+			}
+			catch (const std::out_of_range& e)
+			{
+				allowed_methods = this->_config.get_normal_directive("allowed_methods");
+			}
+			for (vector<string>::iterator method = allowed_methods.begin(); method != allowed_methods.end(); method++)
+			{
+				if (method->compare(request_method) == 0)
+					return (false);
+			}
+			this->_status_code = 405;
+		}
+		return (true);
+	}
+
+	void	Response::handle_error(void)
+	{
+		if (this->_content.empty())
+		{
+			this->read_file("public/error.html");
+			this->prepend_header();
+		}
+		this->send_to_client();
 	}
 
 	void	Response::handle_get(void)
@@ -259,12 +307,11 @@ namespace ft
 
 	void	Response::handle_post(void)
 	{
-		string				closest_match = this->get_closest_match();
 		map<string, string>	files = this->_request->get_files_map();
 
 		for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
 		{
-			ofstream	new_file(this->get_path_to("root", closest_match) + "/" + file->first);
+			ofstream	new_file(this->_root + "/" + file->first);
 
 			new_file << file->second;
 			new_file.close();
@@ -275,30 +322,30 @@ namespace ft
 
 	void	Response::handle_delete(void)
 	{
+		string	request_path = this->_request->get_header("path");
 
-	}
-
-	void	Response::handle_bad_request(void)
-	{
-		if (this->_content.empty())
-		{
-			this->_status_code = 400;
-			this->read_file("public/error.html");
-			this->prepend_header();
-		}
+		if (this->_closest_match == request_path)
+			this->_status_code = 405;
+		else if (remove((this->_root + request_path.substr(this->_closest_match.length())).c_str()) != 0)
+			this->_status_code = 204;
+		this->prepend_header();
 		this->send_to_client();
 	}
 
 	void	Response::handle_methods(void)
 	{
-		if (this->_request->get_header("method") == "GET")
+		this->_closest_match = get_closest_match();
+		this->_root = this->get_path_to("root", this->_closest_match);
+		this->_status_code = 200;
+
+		if (this->check_error())
+			this->handle_error();
+		else if (this->_request->get_header("method") == "GET")
 			this->handle_get();
 		else if (this->_request->get_header("method") == "POST")
 			this->handle_post();
 		else if (this->_request->get_header("method") == "DELETE")
 			this->handle_delete();
-		else
-			this->handle_bad_request();
 	}
 
 	bool	Response::sent(void)

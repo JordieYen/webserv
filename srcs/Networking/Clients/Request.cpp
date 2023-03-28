@@ -19,9 +19,6 @@ namespace	ft
 			std::cout << "Error : recv returns error..." << std::endl;
 		if (strcmp(buffer, "\r\n") != 0 || !this->_content.empty())
 			this->_content.append(buffer, read_bytes);
-		// std::cout << "====================" << std::endl;
-		// std::cout << this->_content << std::endl;
-		// std::cout << "====================" << std::endl;
 		free(buffer);
 	}
 
@@ -37,9 +34,7 @@ namespace	ft
 				return (true);
 			else
 			{
-				if (i == 1 && (word != "GET" && word != "POST" && word != "DELETE"))
-					return (true);
-				else if (i == 2 && (word[0] != '/'))
+				if (i == 2 && (word[0] != '/'))
 					return (true);
 				else if (i == 3 && (word.find("HTTP/1.1") != 0))
 					return (true);

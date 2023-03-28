@@ -6,6 +6,7 @@
 # include <iostream>
 # include <string>
 # include <cstring>
+# include <cstdio>
 # include <sstream>
 # include <fstream>
 # include <sys/stat.h>
@@ -29,6 +30,7 @@ namespace	ft
 			bool	path_is_valid_file(string path);
 			
 			string	get_content_length(void);
+			string	get_status_message(void);
 			
 			string	get_closest_match(void);
 			string	get_path_to(string directive, string match);
@@ -37,17 +39,18 @@ namespace	ft
 
 			void	append_icons(void);
 			void	handle_autoindex(string line);
-			void	handle_error(void);
 			void	read_file(string file_name);
 
 			bool	handle_return(void);
 			void	prepend_header(void);
 			void	send_to_client(void);
 
+			bool	check_error(void);
+			void	handle_error(void);
+
 			void	handle_get(void);
 			void	handle_post(void);
 			void	handle_delete(void);
-			void	handle_bad_request(void);
 			void	handle_methods(void);
 
 			bool	sent(void);
@@ -56,6 +59,7 @@ namespace	ft
 			ServerConfig&	_config;
 			Request*		_request;
 
+			string			_closest_match;
 			string			_root;
 			bool			_is_autoindex;
 

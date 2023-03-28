@@ -4,9 +4,13 @@ namespace	ft
 {
 	SimpleServer::SimpleServer(ServerConfig config) : _config(config)
 	{
+		const char*	methods[] = {"GET", "POST"};
+		
 		this->_config.set_normal_directive("listen", ServerConfig::normalValueType(1, "80"));
 		this->_config.set_normal_directive("root", ServerConfig::normalValueType(1, "public"));
 		this->_config.set_normal_directive("index", ServerConfig::normalValueType(1, "index.html"));
+		this->_config.set_normal_directive("allowed_methods", ServerConfig::normalValueType(methods, methods + 2));
+		this->_config.set_normal_directive("client_max_body_size", ServerConfig::normalValueType(1, "10M"));
 
 		int				port;
 		istringstream	port_stream(this->_config.get_normal_directive("listen").front());

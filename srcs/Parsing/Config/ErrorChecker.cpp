@@ -36,8 +36,8 @@ namespace ft
 
 	void	ErrorChecker::check_key(configIterType& line)
 	{
-		const char*		key_checks[] = {"listen", "root", "index", "return", "location", "}"};
-		stringCheckType	checks(key_checks, key_checks + 6);
+		const char*		key_checks[] = {"listen", "root", "index", "return", "allowed_methods", "client_max_body_size", "location", "}"};
+		stringCheckType	checks(key_checks, key_checks + 8);
 		bool			is_valid = false;
 		static bool		is_location_block;
 		
@@ -144,14 +144,26 @@ namespace ft
 
 	void	ErrorChecker::check_location_key(configIterType& line)
 	{
-		const char*		key_checks[] = {"root", "index", "autoindex", "return", "client_max_body_size"};
-		stringCheckType	checks(key_checks, key_checks + 5);
+		const char*		key_checks[] = {"root", "index", "autoindex", "return", "allowed_methods", "client_max_body_size"};
+		stringCheckType	checks(key_checks, key_checks + 6);
 		bool			is_valid = false;
 
 		for (stringCheckIterType check = checks.begin(); check != checks.end(); check++)
 		{
-			if ((*line).front() == *check)
+			if (line->front() == *check)
 			{
+				if (*check == "client_max_body_size")
+				{
+					string	max_size;
+
+					if (line->at(line->size() - 1) == ";")
+						max_size = line->at(line->size() - 2);
+					else
+						max_size = line->back().substr(0, line->back().length() - 1);
+					if (max_size[max_size.length() - 1] != 'm' &&
+						max_size[max_size.length() - 1] != 'M')
+						throw InvalidConfigException("Error : '" + max_size + "' is an invalid value for client_max_body_size");
+				}
 				is_valid = true;
 				break;
 			}
