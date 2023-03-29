@@ -32,6 +32,7 @@ namespace ft
 
 	void	WebServer::setup(void)
 	{
+		signal(SIGPIPE, SIG_IGN);
 		this->_parser.read_config();
 		this->_parser.check_config();
 		this->_parser.parse_config();
@@ -94,11 +95,11 @@ namespace ft
 				if (!this->current_pollfd_is(0))
 				{
 					// log("Poll size", this->_pollfds.size());
-					// printf("client revents = %s%s%s at fd %d\n",
+					// printf("client revents = %s%s%s at fd \n",
 					// 	this->current_pollfd_is(POLLIN) ? "POLLIN" : "",
 					// 	this->current_pollfd_is(POLLOUT) ? "POLLOUT" : "",
-					// 	this->current_pollfd_is(POLLHUP) ? "POLLHUP" : "", (*client)->get_fd());
-
+					// 	this->current_pollfd_is(POLLHUP) ? "POLLHUP" : "");
+					// std::cout << "pollfd size : " << this->_pollfds.size() << "= " << this->_servers.size() << "+" << this->_clients.size() << std::endl;
 					// log("================", "");
 					Client*	current_client = (*client);
 
@@ -106,7 +107,7 @@ namespace ft
 					{
 						// log("Client pollhup", "");
 						// log("current_pollfd_index", this->_current_pollfd_index);
-						// log("pollfd_size", this->_pollfds.size());
+						close(this->_pollfds[this->_current_pollfd_index].fd);
 						this->_pollfds.erase(this->_pollfds.begin() + this->_current_pollfd_index--);
 						client = this->_clients.erase(client) - 1;
 					}

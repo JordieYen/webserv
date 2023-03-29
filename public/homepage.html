@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			function toggle_finder(class_name)	{
+				document.getElementsByClassName(class_name)[0].style.display = document.getElementsByClassName(class_name)[0].style.display == "none" ? "flex" : "none";
+			}
+			function upload_file()	{
+				document.getElementById("upload_file").click();
+				document.getElementById("upload_file").addEventListener("change", function () {
+					document.getElementById("upload_form").submit();
+				});
+			}
+			function toggle_trash()	{
+				var	selected_files = document.querySelectorAll("input[type=checkbox]:checked");
+
+				if (selected_files.length == 0)
+					document.getElementById("trash").src = "icons/trash.png";
+				if (selected_files.length == 1)
+					document.getElementById("trash").src = "icons/trash_full.png";
+			}
+			function redirect_to_file()	{
+				fetch('/delete' + this.id.substring(file.id.charAt(0) == '_'), {
+					method: 'GET'
+				});
+			}
+			function delete_file()	{
+				var	selected_files = document.querySelectorAll("input[type=checkbox]:checked");
+
+				for (var file of selected_files) {
+					fetch('/delete/' + file.id.substring(file.id.charAt(0) == '_'), {
+						method: 'DELETE'
+					});
+				}
+			}
+		</script>
+		<style>
+			html	{
+				height: 100%;
+				overflow: hidden;
+				user-select: none;
+			}
+			body	{
+				height: 100%;
+				width: 100%;
+				margin: 0 auto;
+			}
+			img	{
+				object-fit: contain;
+			}
+			.screen	{
+				background-image: url('eulee_background.jpg');
+				background-size: cover;
+				border-radius: 5px;
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				height: 100%;
+				width: 100%;
+				border: 1px solid rgb(179,179,179);
+			}
+			.header	{
+				display: flex;
+				align-items: center;
+				height: 1.8%;
+				border-bottom: 1px solid rgb(145,154,167);
+				backdrop-filter: blur(14px);
+				background: rgba(255, 255, 255, 0.6);
+				box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+			}
+			.header_title	{
+				font-family: 'Lucida Grande';
+				font-size: 0.9em;
+				font-weight: bold;
+				line-height: 35px;
+				color: black;
+				margin-left: 21px;
+			}
+			.window	{
+				background-color: white;
+				border-radius: 5px;
+				flex-direction: column;
+				overflow: hidden;
+				height: 50%;
+				width: 50%;
+				position: relative;
+				top: 38.75%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				border: 1px solid rgb(179,179,179);
+			}
+			.window_header	{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 4.5%;
+				background-image: linear-gradient(to bottom, #e4e4e4 , #cecece);
+				border-bottom: 1px solid rgb(179,179,179);
+			}
+			.window_header_title	{
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: #505050;
+				margin-left: 5px;
+			}
+			.window_left_buttons	{
+				position: absolute;
+				margin-right: 93.4%;
+			}
+			.window_button	{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				margin: 2px;
+				margin-top: 7px;
+				border-radius: 50%;
+			}
+			.window_icon_name	{
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: #272727;
+				margin: 3px auto;
+			}
+			.table	{
+				display: block;
+				padding-left: 7.5px;
+			}
+			.icon	{
+				display: inline-block;
+				padding: 8px 20.5px 16px;
+				text-align: center;
+				vertical-align: top;
+			}
+			input[type=checkbox]	{
+				display: none;
+			}
+			input[type=checkbox] + label {
+				background-image: url('icons/folder_256.png');
+				background-size: cover;
+				height: 63px;
+				width: 63px;
+				display:inline-block;
+				padding: 0 0 0 0px;
+			}
+			input[type=checkbox]:checked + label {
+				border-radius: 3px;
+				background: url('icons/folder_256.png'), rgba(0, 0, 0, 0.1);
+				background-size: cover;
+				height: 63px;
+				width: 63px;
+				display:inline-block;
+				padding: 0 0 0 0px;
+			}
+			input[type=checkbox] + label + div	{
+				width: fit-content;
+				margin: 0 auto;
+				padding: 1px 3px;
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: white;
+				text-shadow: 0px 1px 4px black;
+			}
+			input[type=checkbox]:checked + label + div {
+				border-radius: 3px;
+				width: fit-content;
+				margin: 0 auto;
+				padding: 1px 3px;
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: white;
+				text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+				background-color: rgb(0, 99, 225);
+			}
+			input[type=checkbox] + label + div.finder_label	{
+				color: black;
+				text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+			}
+			input[type=checkbox]:checked + label + div.finder_label {
+				color: white;
+				text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+			}
+			.footer	{
+				display: block;
+				justify-content: center;
+				align-items: center;
+				height: 5%;
+				position: fixed;
+				left: 39.75%;
+				bottom: 0;
+				border-radius: 5px 5px 0px 0px;
+				padding: 4px 6px 10px 6px;
+				border-bottom: 1px solid rgb(145,154,167);
+				backdrop-filter: blur(14px);
+				background: rgba(255, 255, 255, 0.6);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="screen">
+			<div class="header">
+				<p class="header_title">&nbsp&nbsp&nbsp&nbspUsername</p>
+			</div>
+			<div class="table">
+				<div class="icon">
+					<input type="checkbox" id="folder" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
+					<label for="folder"></label>
+					<div>
+						<label>folder</label>
+					</div>
+				</div>
+				<div class="icon">
+					<input type="checkbox" id="tbd.txt" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
+					<label for="tbd.txt"></label>
+					<div>
+						<label>tbd.txt</label>
+					</div>
+				</div>
+			</div>
+			<div class="window" style="display: none">
+				<div class="window_header">
+					<div class="window_left_buttons">
+						<span class="window_button" style="background-color: rgb(255, 98, 89);" onclick="toggle_finder('window')"></span>
+						<span class="window_button" style="background-color: rgb(255, 195, 50);" onclick="toggle_finder('window')"></span>
+						<span class="window_button" style="background-color: rgb(46, 208, 66);" onclick="toggle_finder('window')"></span>
+					</div>
+					<img src="icons/folder_256.png" height="15" width="15">
+					<p class="window_header_title"></p>
+				</div>
+				<div class="table">
+					<div class="icon">
+						<input type="checkbox" id="_folder" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
+						<label for="_folder"></label>
+						<div class="finder_label">
+							<label>folder</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer">
+				<img src="icons/finder.png" height="60" width="60" onclick="toggle_finder('window')">
+				<form id="upload_form" action="/uploads" method="post" enctype="multipart/form-data" hidden>
+					<input id="upload_file" name="file" type="file">
+					<input type="submit">
+				</form>
+				<img src="icons/siri.png" height="60" width="60" onclick="upload_file()">
+				<a href="https://www.discord.gg"><img src="icons/discord.png" height="60" width="60"></a>
+				<a href="https://www.google.com"><img src="icons/chrome.png" height="60" width="60"></a>
+				<a href="https://code.visualstudio.com"><img src="icons/vs_code.png" height="60" width="60"></a>
+				<img src="icons/line.png" height="54" width="27">
+				<img src="icons/trash.png" id="trash" height="60" width="60" onclick="delete_file()">
+			</div>
+		</div>
+	</body>
+</html>

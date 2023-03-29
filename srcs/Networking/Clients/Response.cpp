@@ -36,6 +36,7 @@ namespace ft
 			case 200:	return (string("200 OK"));
 			case 204:	return (string("204 No Content"));
 			case 301:	return (string("301 Moved Permanently"));
+			case 303:	return (string("303 See Other"));
 			case 400:	return (string("400 Bad Request"));
 			case 404:	return (string("404 Not Found"));
 			case 405:	return (string("405 Method Not Allowed"));
@@ -135,11 +136,11 @@ namespace ft
 			{
 				this->_content.append("\t\t\t\t<div class=\"icon\">\n");
 				if (dir_entries->d_type == DT_DIR)
-					this->_content.append("\t\t\t\t\t<a href=\"" + full_path + "\"><img src=\"/public/folder_icons/folder_256.png\" height=\"63\" width=\"63\"></a>\n");
+					this->_content.append("\t\t\t\t\t<a href=\"" + full_path + "\"><img src=\"/public/icons/folder_256.png\" height=\"63\" width=\"63\"></a>\n");
 				else if (dir_entries->d_type == DT_REG && (full_path.find(".jpg") != string::npos || full_path.find(".png") != string::npos))
 					this->_content.append("\t\t\t\t\t<a href=\"" + full_path + "\"><img src=\"" + full_path + "\" height=\"63\" width=\"63\"></a>\n");
 				else
-					this->_content.append("\t\t\t\t\t<a href=\"" + full_path + "\"><img src=\"/public/folder_icons/folder_256.png\" height=\"63\" width=\"63\"></a>\n");
+					this->_content.append("\t\t\t\t\t<a href=\"" + full_path + "\"><img src=\"/public/icons/folder_256.png\" height=\"63\" width=\"63\"></a>\n");
 				this->_content.append("\t\t\t\t\t<p class=\"icon_name\">" + dir_name + "</p>\n");
 				this->_content.append("\t\t\t\t</div>\n");
 			}
@@ -222,11 +223,15 @@ namespace ft
 	void	Response::send_to_client(void)
 	{
 		int	length_to_send = this->_content.length();
-		if (length_to_send <= 100000)
+		if (length_to_send <= 50000)
 			this->_sent = true;
 		else
-			length_to_send = 100000;
-		send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0);
+			length_to_send = 50000;
+		if (fcntl(this->_request->get_client_fd(), F_GETFD) != -1)
+		{
+			if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) == -1)
+				std::cout << "Error : read returns error..." << std::endl;
+		}
 		this->_content = this->_content.substr(length_to_send);
 	}
 
@@ -316,7 +321,9 @@ namespace ft
 			new_file << file->second;
 			new_file.close();
 		}
-		this->prepend_header();
+		this->_status_code = 301;
+		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
+		this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n\r\n");
 		this->send_to_client();
 	}
 
@@ -328,7 +335,9 @@ namespace ft
 			this->_status_code = 405;
 		else if (remove((this->_root + request_path.substr(this->_closest_match.length())).c_str()) != 0)
 			this->_status_code = 204;
-		this->prepend_header();
+		this->_status_code = 303;
+		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
+		this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n\r\n");
 		this->send_to_client();
 	}
 

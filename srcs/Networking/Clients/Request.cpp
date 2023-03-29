@@ -69,6 +69,8 @@ namespace	ft
 		while (getline(full_header, line))
 		{
 			line = line.substr(0, line.length() - 1);
+			if (line.find("Referer") != string::npos)
+				this->_referrer = line.substr(line.find(':') + 1);
 			for (vector<string>::iterator context = content_context.begin(); context != content_context.end(); context++)
 			{
 				if (line.find(*context) != string::npos)
@@ -210,6 +212,8 @@ namespace	ft
 			return (this->_path);
 		else if (key == "method")
 			return (this->_method);
+		else if (key == "referrer")
+			return (this->_referrer);
 		else
 			return ("Not Found");
 	}

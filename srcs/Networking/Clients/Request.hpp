@@ -55,6 +55,7 @@ namespace ft
 
 			string				_method;
 			string				_path;
+			string				_referrer;
 
 			map<string, string>	_body;
 			map<string, string>	_files;
