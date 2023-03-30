@@ -68,9 +68,14 @@ namespace	ft
 
 		while (getline(full_header, line))
 		{
-			line = line.substr(0, line.length() - 1);
+			line = line.substr(0, line.length());
 			if (line.find("Referer") != string::npos)
 				this->_referrer = line.substr(line.find(':') + 1);
+			if (line.find("Cookie: ") != string::npos)
+			{
+				// std::cout << line << std::endl;
+				this->_cookies.insert(make_pair(line.substr((line.find("Cookie: ") + 8), line.find(";") - (line.find("Cookie: ") + 8)), line.substr((line.find(";") + 2))));
+			}
 			for (vector<string>::iterator context = content_context.begin(); context != content_context.end(); context++)
 			{
 				if (line.find(*context) != string::npos)
@@ -84,6 +89,12 @@ namespace	ft
 				}
 			}
 		}
+
+		// for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
+		// {
+		// 	std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
+		// }
+		std::cout << this->_content << std::endl;
 	}
 
 	bool	Request::context_equals(string context, string value)

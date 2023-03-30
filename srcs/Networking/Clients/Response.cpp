@@ -225,7 +225,8 @@ namespace ft
 		if (this->_request->get_header("path").find(".ico") != string::npos)
 			header.append("Content-Type: image/x-icon\r\n");
 		else
-			header.append("Content-Type: */*\r\n");
+			header.append("Content-Type: */*; charset=utf-8\r\n ");
+		// header.append(string("Set-Cookie: username=jkingye; password=bruh;\r\n"));
 		header.append("Content-Length: ");
 		header.append(this->get_string_from_numeral(this->_content.length()));
 		header.append("\r\n\r\n");
@@ -337,7 +338,9 @@ namespace ft
 		}
 		this->_status_code = 301;
 		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
-		this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n\r\n");
+		// this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n");
+		this->_content.append("Location: http://localhost/homepage\r\n");
+		this->_content.append("Set-Cookie: u=broup; this=br;\r\n\r\n");
 		this->send_to_client();
 	}
 

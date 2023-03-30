@@ -59,6 +59,7 @@ namespace ft
 
 			map<string, string>	_body;
 			map<string, string>	_files;
+			map<string, string>	_cookies;
 
 			bool				_received;
 	};
