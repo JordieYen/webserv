@@ -5,6 +5,7 @@
 # include <vector>
 # include <map>
 # include <poll.h>
+# include <signal.h>
 # include "SimpleServer.hpp"
 # include "../../Parsing/Parsing.hpp"
 # include "../Clients/Clients.hpp"

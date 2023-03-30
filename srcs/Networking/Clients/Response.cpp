@@ -21,11 +21,11 @@ namespace ft
 		return (path_exists == 0 && (path_stat.st_mode & S_IFREG));
 	}
 
-	string	Response::get_content_length(void)
+	string	Response::get_string_from_numeral(int	input)
 	{
 		stringstream	length_stream;
 
-		length_stream << this->_content.length();
+		length_stream << input;
 		return (length_stream.str());
 	}
 
@@ -78,6 +78,20 @@ namespace ft
 		}
 	}
 
+	string	Response::get_path_to_error(void)
+	{
+		try
+		{
+			string path = this->_root + "/" + this->_config.get_normal_directive(this->get_string_from_numeral(this->_status_code)).front();
+			
+			if (this->path_is_valid_file(path))
+				return (path);
+		}
+		catch (const std::out_of_range& e) {}
+
+		return (string("public/error.html"));
+	}
+
 	string	Response::get_path_to_index(string root, string match)
 	{
 		try
@@ -108,8 +122,8 @@ namespace ft
 				path_to_file.append(request_path.substr(this->_closest_match.length() + (request_path[this->_closest_match.length()] == '/')));
 			if (!this->path_is_valid_file(path_to_file))
 			{
-				path_to_file = "public/error.html";
 				this->_status_code = 404;
+				path_to_file = this->get_path_to_error();
 			}
 		}
 		return (path_to_file);
@@ -171,7 +185,7 @@ namespace ft
 			{
 				if (this->_is_autoindex)
 					this->handle_autoindex(line);
-				else if (this->_status_code != 200 && line.compare("\t<body>") == 0)
+				else if (this->_status_code != 200 && line.compare("\t<body>") == 0 && file_name == "public/error.html")
 					this->_content.append("\t\t<h1>" + this->get_status_message() + "</h1>\n");
 				else
 					this->_content.append(line + "\n");
@@ -213,7 +227,7 @@ namespace ft
 		else
 			header.append("Content-Type: */*\r\n");
 		header.append("Content-Length: ");
-		header.append(this->get_content_length());
+		header.append(this->get_string_from_numeral(this->_content.length()));
 		header.append("\r\n\r\n");
 		header.append(this->_content);
 		this->_content.clear();
@@ -230,7 +244,7 @@ namespace ft
 		if (fcntl(this->_request->get_client_fd(), F_GETFD) != -1)
 		{
 			if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) == -1)
-				std::cout << "Error : read returns error..." << std::endl;
+				std::cout << "Error : send returns error..." << std::endl;
 		}
 		this->_content = this->_content.substr(length_to_send);
 	}
@@ -291,7 +305,7 @@ namespace ft
 	{
 		if (this->_content.empty())
 		{
-			this->read_file("public/error.html");
+			this->read_file(this->get_path_to_error());
 			this->prepend_header();
 		}
 		this->send_to_client();
@@ -316,7 +330,7 @@ namespace ft
 
 		for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
 		{
-			ofstream	new_file(this->_root + "/" + file->first);
+			ofstream	new_file((this->_root + "/" + file->first).c_str());
 
 			new_file << file->second;
 			new_file.close();

@@ -114,6 +114,8 @@ namespace	ft
 				}
 				else
 				{
+					if (line->front() == "error_page")
+						line->erase(line->begin());
 					if (line->back() == ";")
 						line->pop_back();
 					else

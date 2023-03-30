@@ -32,13 +32,14 @@ namespace	ft
 
 			bool	path_is_valid_file(string path);
 			
-			string	get_content_length(void);
+			string	get_string_from_numeral(int	input);
 			string	get_status_message(void);
 			
 			string	get_closest_match(void);
 			string	get_path_to(string directive, string match);
 			string	get_path_to_index(string root, string match);
 			string	get_path_to_file(void);
+			string	get_path_to_error(void);
 
 			void	append_icons(void);
 			void	handle_autoindex(string line);
