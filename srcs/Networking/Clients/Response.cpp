@@ -83,7 +83,7 @@ namespace ft
 		try
 		{
 			string path = this->_root + "/" + this->_config.get_normal_directive(this->get_string_from_numeral(this->_status_code)).front();
-			
+
 			if (this->path_is_valid_file(path))
 				return (path);
 		}
@@ -225,7 +225,7 @@ namespace ft
 		if (this->_request->get_header("path").find(".ico") != string::npos)
 			header.append("Content-Type: image/x-icon\r\n");
 		else
-			header.append("Content-Type: */*; charset=utf-8\r\n ");
+			header.append("Content-Type: */*; charset=utf-8\r\n");
 		// header.append(string("Set-Cookie: username=jkingye; password=bruh;\r\n"));
 		header.append("Content-Length: ");
 		header.append(this->get_string_from_numeral(this->_content.length()));
@@ -286,7 +286,7 @@ namespace ft
 			}
 			try
 			{
-				allowed_methods = this->_config.get_location_directive(this->_closest_match, "allowed_methods");	
+				allowed_methods = this->_config.get_location_directive(this->_closest_match, "allowed_methods");
 			}
 			catch (const std::out_of_range& e)
 			{

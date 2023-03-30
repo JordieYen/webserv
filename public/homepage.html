@@ -11,24 +11,27 @@
 					document.getElementById("upload_form").submit();
 				});
 			}
-			function toggle_trash()	{
+			function toggle_trash(x)	{
 				var	selected_files = document.querySelectorAll("input[type=checkbox]:checked");
 
 				if (selected_files.length == 0)
 					document.getElementById("trash").src = "icons/trash.png";
 				if (selected_files.length == 1)
 					document.getElementById("trash").src = "icons/trash_full.png";
+
+				if (x.checked)
+					x.nextSibling.nextSibling.style.backgroundColor = "rgba(0, 0, 0, 0.1)";
+				else
+					x.nextSibling.nextSibling.style.backgroundColor = "rgba(0, 0, 0, 0.0)";
 			}
-			function redirect_to_file()	{
-				fetch('/delete' + this.id.substring(file.id.charAt(0) == '_'), {
-					method: 'GET'
-				});
+			function redirect_to_file(x)	{
+				window.location.href = '/' + x.textContent;
 			}
 			function delete_file()	{
 				var	selected_files = document.querySelectorAll("input[type=checkbox]:checked");
 
 				for (var file of selected_files) {
-					fetch('/delete/' + file.id.substring(file.id.charAt(0) == '_'), {
+					fetch('/' + file.id.substring(file.id.charAt(0) == '_'), {
 						method: 'DELETE'
 					});
 				}
@@ -142,7 +145,6 @@
 				display: none;
 			}
 			input[type=checkbox] + label {
-				background-image: url('icons/folder_256.png');
 				background-size: cover;
 				height: 63px;
 				width: 63px;
@@ -151,7 +153,6 @@
 			}
 			input[type=checkbox]:checked + label {
 				border-radius: 3px;
-				background: url('icons/folder_256.png'), rgba(0, 0, 0, 0.1);
 				background-size: cover;
 				height: 63px;
 				width: 63px;
@@ -205,24 +206,10 @@
 	<body>
 		<div class="screen">
 			<div class="header">
-				<p class="header_title">&nbsp&nbsp&nbsp&nbspUsername</p>
-				<p class="header_time">Thu 12:36</p>
+				<p class="header_title">&nbsp&nbsp&nbsp&nbsp</p>
+				<p class="header_time"></p>
 			</div>
 			<div class="table">
-				<div class="icon">
-					<input type="checkbox" id="folder" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
-					<label for="folder"></label>
-					<div>
-						<label>folder</label>
-					</div>
-				</div>
-				<div class="icon">
-					<input type="checkbox" id="tbd.txt" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
-					<label for="tbd.txt"></label>
-					<div>
-						<label>tbd.txt</label>
-					</div>
-				</div>
 			</div>
 			<div class="window" style="display: none">
 				<div class="window_header">
@@ -234,19 +221,12 @@
 					<img src="icons/folder_256.png" height="15" width="15">
 					<p class="window_header_title"></p>
 				</div>
-				<div class="table">
-					<div class="icon">
-						<input type="checkbox" id="_folder" onclick="toggle_trash()" ondblclick="redirect_to_file()"/>
-						<label for="_folder"></label>
-						<div class="finder_label">
-							<label>folder</label>
-						</div>
-					</div>
+				<div class="table" id="window_table">
 				</div>
 			</div>
 			<div class="footer">
 				<img src="icons/finder.png" height="60" width="60" onclick="toggle_finder('window')">
-				<form id="upload_form" action="/uploads" method="post" enctype="multipart/form-data" hidden>
+				<form id="upload_form" action="/" method="post" enctype="multipart/form-data" hidden>
 					<input id="upload_file" name="file" type="file">
 					<input type="submit">
 				</form>
