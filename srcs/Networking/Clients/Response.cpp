@@ -226,7 +226,9 @@ namespace ft
 			header.append("Content-Type: image/x-icon\r\n");
 		else
 			header.append("Content-Type: */*; charset=utf-8\r\n");
-		// header.append(string("Set-Cookie: username=jkingye; password=bruh;\r\n"));
+		header.append(string("Set-Cookie: username=jkingye;\r\n"));
+		header.append(string("Set-Cookie: password=bruh;\r\n"));
+		header.append(string("Set-Cookie: pool=hehe;\r\n"));
 		header.append("Content-Length: ");
 		header.append(this->get_string_from_numeral(this->_content.length()));
 		header.append("\r\n\r\n");

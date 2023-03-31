@@ -35,6 +35,7 @@ namespace ft
 			string				get_header(string key) const;
 			map<string, string>	get_body_map(void) const;
 			map<string, string>	get_files_map(void) const;
+			map<string, string>	get_cookies_map(void) const;
 			bool				received(void) const;
 
 		private:
@@ -43,6 +44,7 @@ namespace ft
 			bool	header_not_valid(void);
 			void	set_bad_request(void);
 			void	parse_header(void);
+			void	parse_cookies(string line);
 
 			bool	context_equals(string context, string value);
 			bool	body_has_minimum_length(void);

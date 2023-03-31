@@ -68,33 +68,48 @@ namespace	ft
 
 		while (getline(full_header, line))
 		{
-			line = line.substr(0, line.length());
+			if (line[line.length() - 1] == '\r')
+				line = line.substr(0, line.length() - 1);
 			if (line.find("Referer") != string::npos)
 				this->_referrer = line.substr(line.find(':') + 1);
 			if (line.find("Cookie: ") != string::npos)
+				this->parse_cookies(line.substr(line.find("Cookie: ") + 8));
+			else
 			{
-				// std::cout << line << std::endl;
-				this->_cookies.insert(make_pair(line.substr((line.find("Cookie: ") + 8), line.find(";") - (line.find("Cookie: ") + 8)), line.substr((line.find(";") + 2))));
-			}
-			for (vector<string>::iterator context = content_context.begin(); context != content_context.end(); context++)
-			{
-				if (line.find(*context) != string::npos)
+				for (vector<string>::iterator context = content_context.begin(); context != content_context.end(); context++)
 				{
-					if (line.find("multipart/form-data") != string::npos)
+					if (line.find(*context) != string::npos)
 					{
-						this->_content_context.insert(make_pair("Form-Boundary:", line.substr(line.find('=') + 1, line.length())));
-						line = line.substr(0, line.find(';'));
+						if (line.find("multipart/form-data") != string::npos)
+						{
+							this->_content_context.insert(make_pair("Form-Boundary:", line.substr(line.find('=') + 1, line.length())));
+							line = line.substr(0, line.find(';'));
+						}
+						this->_content_context.insert(make_pair(line.substr(0, line.find(' ')), line.substr(line.find(' ') + 1, line.length())));
 					}
-					this->_content_context.insert(make_pair(line.substr(0, line.find(' ')), line.substr(line.find(' ') + 1, line.length())));
 				}
 			}
 		}
 
-		// for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
-		// {
-		// 	std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
-		// }
+		for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
+		{
+			std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
+		}
 		std::cout << this->_content << std::endl;
+	}
+
+	void	Request::parse_cookies(string line)
+	{
+		stringstream	full_line(line);
+		string			check;
+
+		while (getline(full_line, check, ' '))
+		{
+			if (check[check.length() - 1] == ';')
+				check = check.substr(0, check.length() - 1);
+			if (check.find("=") != string::npos)
+				this->_cookies.insert(make_pair(check.substr(0, check.find("=")), check.substr(check.find("=") + 1)));
+		}
 	}
 
 	bool	Request::context_equals(string context, string value)
@@ -237,6 +252,11 @@ namespace	ft
 	map<string, string>	Request::get_files_map() const
 	{
 		return (this->_files);
+	}
+
+	map<string, string>	Request::get_cookies_map() const
+	{
+		return (this->_cookies);
 	}
 
 	bool	Request::received(void) const

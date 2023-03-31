@@ -17,6 +17,7 @@ namespace	ft
 		
 		port_stream >> port;
 		this->_socket = new ListeningSocket(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10);
+		this->_cookies = new map<string, vector<string> >();
 		this->_port = port;
 	}
 
@@ -53,5 +54,10 @@ namespace	ft
 
 		fd = accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen);
 		return (fd);
+	}
+
+	map<string, vector<string> >	*SimpleServer::get_cookies(void) const
+	{
+		return (this->_cookies);
 	}
 }
