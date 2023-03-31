@@ -76,7 +76,7 @@ namespace ft
 					if (client_fd != -1)
 					{
 						// log("Server pollin...", "");
-						Client*		new_client = new Client(server->second->get_config(), client_fd);
+						Client*		new_client = new Client(*(server->second), client_fd);
 						pollFdType	new_pollfd;
 
 						new_pollfd.fd = client_fd;

@@ -33,6 +33,8 @@
 				for (var file of selected_files) {
 					fetch('/' + file.id.substring(file.id.charAt(0) == '_'), {
 						method: 'DELETE'
+					}).then(response => {
+						window.location = response.url;
 					});
 				}
 			}

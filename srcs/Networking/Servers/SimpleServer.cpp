@@ -17,7 +17,7 @@ namespace	ft
 		
 		port_stream >> port;
 		this->_socket = new ListeningSocket(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10);
-		this->_cookies = new map<string, vector<string> >();
+		this->_cookies.insert(make_pair("USR_KYZ", usernameMapType()));
 		this->_port = port;
 	}
 
@@ -50,14 +50,19 @@ namespace	ft
 	{
 		struct sockaddr_in	address = this->_socket->get_address();
 		int					addrlen = sizeof(address);
-		int					fd;
 
-		fd = accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen);
-		return (fd);
+		return (accept(this->_socket->get_fd(), (struct sockaddr *)&address, (socklen_t *)&addrlen));
 	}
 
-	map<string, vector<string> >	*SimpleServer::get_cookies(void) const
+	string	SimpleServer::get_cookie_value(string key, string cookie) const
 	{
-		return (this->_cookies);
+		if (this->_cookies.at(key).find(cookie) != this->_cookies.at(key).end())
+			return (this->_cookies.at(key).at(cookie));
+		return (string());
+	}
+
+	void	SimpleServer::set_cookie(string key, string cookie, string value)
+	{
+		this->_cookies.at(key).insert(make_pair(cookie, value));
 	}
 }

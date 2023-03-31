@@ -16,20 +16,10 @@ int	main(int argc, char** argv, char **envp)
 
 	if (pid == 0)
 	{
-		// {
-		// 	const char*	args_arr[3] = {"/usr/bin/python3", "cgi.py"};
-		// 	std::vector<std::string>	args_s(args_arr, args_arr + 2);
-		// 	std::vector<char*>	args;
-		// 	args.push_back(args_s[0].data());
-		// 	args.push_back(args_s[1].data());
-		// 	args.push_back(nullptr);
-		// }
-		// {
-			std::vector<char*>	args;
-			args.push_back(strdup("/usr/bin/python3"));
-			args.push_back(strdup("homepage.py"));
-			args.push_back(nullptr);
-		// }
+		std::vector<char*>	args;
+		args.push_back(strdup("/usr/bin/python3"));
+		args.push_back(strdup("homepage.py"));
+		args.push_back(nullptr);
 
 		int		envp_len = 0;
 		char**	temp = envp;

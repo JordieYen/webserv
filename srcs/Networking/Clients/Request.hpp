@@ -31,12 +31,12 @@ namespace ft
 			void	handle_request(void);
 			void	clear(void);
 
-			int					get_client_fd(void) const;
-			string				get_header(string key) const;
-			map<string, string>	get_body_map(void) const;
-			map<string, string>	get_files_map(void) const;
-			map<string, string>	get_cookies_map(void) const;
-			bool				received(void) const;
+			int						get_client_fd(void) const;
+			string					get_header(string key) const;
+			map<string, string>&	get_body_map(void);
+			map<string, string>&	get_files_map(void);
+			map<string, string>&	get_cookies_map(void);
+			bool					received(void) const;
 
 		private:
 			void	read_from_client(void);

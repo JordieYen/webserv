@@ -2,7 +2,7 @@
 
 namespace ft
 {
-	Response::Response(ServerConfig& config, Request* request) : _config(config)
+	Response::Response(SimpleServer& server, Request* request) : _server(server), _config(server.get_config())
 	{
 		this->_request = request;
 		this->_is_autoindex = false;
@@ -66,11 +66,11 @@ namespace ft
 		return (closest_match);
 	}
 
-	string	Response::get_path_to(string directive, string match)
+	string	Response::get_path_to(string directive)
 	{
 		try
 		{
-			return (this->_config.get_location_directive(match, directive).front());
+			return (this->_config.get_location_directive(this->_closest_match, directive).front());
 		}
 		catch (const std::out_of_range& e)
 		{
@@ -92,18 +92,18 @@ namespace ft
 		return (string("public/error.html"));
 	}
 
-	string	Response::get_path_to_index(string root, string match)
+	string	Response::get_path_to_index(void)
 	{
 		try
 		{
-			if (this->_config.get_location_directive(match, "autoindex").front() == "on")
+			if (this->_config.get_location_directive(this->_closest_match, "autoindex").front() == "on")
 			{
 				this->_is_autoindex = true;
 				return ("public/autoindex.html");
 			}
 		}
 		catch (const std::out_of_range& e) {}
-		return (root.append(this->get_path_to("index", match)));
+		return (this->_root + "/" + this->get_path_to("index"));
 	}
 
 	string	Response::get_path_to_file(void)
@@ -117,7 +117,7 @@ namespace ft
 		{
 			path_to_file = this->_root + "/";
 			if (this->_closest_match == request_path)
-				path_to_file = this->get_path_to_index(path_to_file, this->_closest_match);
+				path_to_file = this->get_path_to_index();
 			else
 				path_to_file.append(request_path.substr(this->_closest_match.length() + (request_path[this->_closest_match.length()] == '/')));
 			if (!this->path_is_valid_file(path_to_file))
@@ -127,6 +127,29 @@ namespace ft
 			}
 		}
 		return (path_to_file);
+	}
+
+	string	Response::generate_random_hash(void)
+	{
+		std::random_device	rd;
+		std::mt19937		rng(rd());
+		std::string			alnum = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		std::string			hash;
+
+		for (int i = 0; i < 32; i++)
+			hash.push_back(alnum[std::uniform_int_distribution<int>(0, 61)(rng)]);
+		return (hash);
+	}
+
+	string	Response::generate_time_limit(int minutes)
+	{
+		time_t	t = time(NULL) + (minutes * 60);
+		struct tm* gmt_t = gmtime(&t);
+
+		char	timestamp[30];
+
+		strftime(timestamp, sizeof(timestamp), "%a, %d-%b-%Y %H:%M:%S GMT", gmt_t);
+		return (timestamp);
 	}
 
 	void	Response::append_icons(void)
@@ -226,9 +249,6 @@ namespace ft
 			header.append("Content-Type: image/x-icon\r\n");
 		else
 			header.append("Content-Type: */*; charset=utf-8\r\n");
-		header.append(string("Set-Cookie: username=jkingye;\r\n"));
-		header.append(string("Set-Cookie: password=bruh;\r\n"));
-		header.append(string("Set-Cookie: pool=hehe;\r\n"));
 		header.append("Content-Length: ");
 		header.append(this->get_string_from_numeral(this->_content.length()));
 		header.append("\r\n\r\n");
@@ -314,6 +334,64 @@ namespace ft
 		this->send_to_client();
 	}
 
+	bool	Response::check_cgi(void)
+	{
+		try
+		{
+			return (!this->_config.get_location_directive(this->_closest_match, "cgi_pass").empty());
+		}
+		catch (const std::out_of_range& e) {}
+		return (false);
+	}
+
+	void	Response::handle_cgi(void)
+	{
+		if (this->_content.empty())
+		{
+			int		fds[2];
+			pid_t	pid;
+			string	path = this->_root + "/" + this->get_path_to("index");
+
+			pipe(fds);
+			pid = fork();
+			if (pid == 0)
+			{
+				vector<char*>	args;
+
+				args.push_back(strdup("/usr/bin/python3"));
+				args.push_back(strdup(path.c_str()));
+				args.push_back(nullptr);
+
+				vector<char*>	envp;
+
+				envp.push_back(strdup(string("REQUEST_METHOD=" + this->_request->get_header("method")).c_str()));
+				envp.push_back(strdup(string("PATH_INFO=" + this->_request->get_header("path")).c_str()));
+				envp.push_back(strdup(string("USERNAME=" + this->_username).c_str()));
+				envp.push_back(nullptr);
+
+				dup2(fds[1], STDOUT_FILENO);
+				close(fds[1]);
+				close(fds[0]);
+				execve("/usr/bin/python3", args.data(), envp.data());
+			}
+			else if (pid > 0)
+			{
+				close(fds[1]);
+				waitpid(pid, NULL, 0);
+
+				char*	buffer = static_cast<char*>(calloc(65535 * sizeof(char), sizeof(char)));
+
+				read(fds[0], buffer, 65535);
+				this->_content.append(buffer);
+				free(buffer);
+			}
+			else
+				std::cout << "Error : fork returns error..." << std::endl;
+			this->prepend_header();
+		}
+		this->send_to_client();
+	}
+
 	void	Response::handle_get(void)
 	{
 		if (this->_content.empty())
@@ -340,9 +418,17 @@ namespace ft
 		}
 		this->_status_code = 301;
 		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
-		// this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n");
-		this->_content.append("Location: http://localhost/homepage\r\n");
-		this->_content.append("Set-Cookie: u=broup; this=br;\r\n\r\n");
+
+		if (this->_request->get_body_map().find("username") != this->_request->get_body_map().end())
+		{
+			string	hash = this->generate_random_hash();
+
+			this->_server.set_cookie("USR_KYZ", hash, this->_request->get_body_map().at("username"));
+			this->_content.append("Location: /homepage\r\n");
+			this->_content.append("Set-Cookie: USR_KYZ=" + hash + "; Expires=" + this->generate_time_limit(5) + "\r\n\r\n");
+		}
+		else
+			this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n");
 		this->send_to_client();
 	}
 
@@ -354,7 +440,7 @@ namespace ft
 			this->_status_code = 405;
 		else if (remove((this->_root + request_path.substr(this->_closest_match.length())).c_str()) != 0)
 			this->_status_code = 204;
-		this->_status_code = 303;
+		this->_status_code = 301;
 		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
 		this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n\r\n");
 		this->send_to_client();
@@ -363,11 +449,16 @@ namespace ft
 	void	Response::handle_methods(void)
 	{
 		this->_closest_match = get_closest_match();
-		this->_root = this->get_path_to("root", this->_closest_match);
+		this->_root = this->get_path_to("root");
 		this->_status_code = 200;
+		
+		if (this->_request->get_cookies_map().find("USR_KYZ") != this->_request->get_cookies_map().end())
+			this->_username = this->_server.get_cookie_value("USR_KYZ", this->_request->get_cookies_map().at("USR_KYZ"));
 
 		if (this->check_error())
 			this->handle_error();
+		else if (this->check_cgi())
+			this->handle_cgi();
 		else if (this->_request->get_header("method") == "GET")
 			this->handle_get();
 		else if (this->_request->get_header("method") == "POST")

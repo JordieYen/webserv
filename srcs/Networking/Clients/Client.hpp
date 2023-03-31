@@ -2,7 +2,7 @@
 # define CLIENT_HPP
 
 # include <iostream>
-# include "../Servers/ServerConfig.hpp"
+# include "../Servers/SimpleServer.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
 
@@ -11,7 +11,7 @@ namespace	ft
 	class	Client
 	{
 		public:
-			Client(ServerConfig& config, int fd);
+			Client(SimpleServer& server, int fd);
 			~Client();
 
 			bool	received_request(void);

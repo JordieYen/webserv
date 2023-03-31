@@ -90,12 +90,11 @@ namespace	ft
 				}
 			}
 		}
-
-		for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
-		{
-			std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
-		}
-		std::cout << this->_content << std::endl;
+		// for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
+		// {
+		// 	std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
+		// }
+		// std::cout << this->_content << std::endl;
 	}
 
 	void	Request::parse_cookies(string line)
@@ -186,7 +185,7 @@ namespace	ft
 				else
 				{
 					name = first_line.substr(first_line.find('=') + 2, first_line.length() - first_line.find('=') - 3);
-					this->_body.insert(make_pair(name, part.substr(part.find("\r\n\r\n") + 4)));
+					this->_body.insert(make_pair(name, part.substr(part.find("\r\n\r\n") + 4, part.length() - part.find("\r\n\r\n") - 6)));
 				}
 				name.clear();
 			}
@@ -224,7 +223,10 @@ namespace	ft
 		this->_content_context.clear();
 		this->_method.clear();
 		this->_path.clear();
+		this->_referrer.clear();
 		this->_body.clear();
+		this->_files.clear();
+		this->_cookies.clear();
 	}
 
 	int	Request::get_client_fd(void) const
@@ -244,17 +246,17 @@ namespace	ft
 			return ("Not Found");
 	}
 
-	map<string, string>	Request::get_body_map() const
+	map<string, string>&	Request::get_body_map()
 	{
 		return (this->_body);
 	}
 
-	map<string, string>	Request::get_files_map() const
+	map<string, string>&	Request::get_files_map()
 	{
 		return (this->_files);
 	}
 
-	map<string, string>	Request::get_cookies_map() const
+	map<string, string>&	Request::get_cookies_map()
 	{
 		return (this->_cookies);
 	}

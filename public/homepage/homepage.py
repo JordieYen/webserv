@@ -4,7 +4,7 @@ from datetime import datetime as dt
 def	append_icons(full_path, is_window):
 	icons = ""
 
-	for file in os.listdir(full_path):
+	for file in os.listdir("public/" + full_path):
 		if is_window:
 			icons += "\t\t\t\t\t<div class=\"icon\">\n"
 			icons += "\t\t\t\t\t\t<input type=\"checkbox\" id=_" + file + " onclick=\"toggle_trash(this)\"/>\n"
@@ -24,7 +24,7 @@ def	append_icons(full_path, is_window):
 	return (icons)
 
 def generate_homepage(full_path):
-	with open("homepage.html") as homepage:
+	with open("public/homepage/homepage.html") as homepage:
 		for line in homepage:
 			if line.startswith("\t\t\t\twindow.location.href"):
 				line = line[:28] + "/" + full_path + line[28:]
@@ -41,13 +41,13 @@ def generate_homepage(full_path):
 			print(line, end = '')
 
 def	generate_login():
-	with open("index.html") as login:
+	with open("public/homepage/login.html") as login:
 		for line in login:
 			print(line, end = '')
 
 if (os.environ.get("USERNAME")):
 	full_path = "users/" + os.environ.get("USERNAME")
-	os.makedirs(full_path, exist_ok = True)
+	os.makedirs("public/" + full_path, exist_ok = True)
 	generate_homepage(full_path)
 else:
 	generate_login()
