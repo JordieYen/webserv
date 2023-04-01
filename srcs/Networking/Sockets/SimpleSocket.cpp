@@ -11,7 +11,7 @@ namespace ft
 		this->_address.sin_addr.s_addr = htonl(interface);
 		this->_fd = socket(domain, service, protocol);
 		setsockopt(this->_fd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
-		fcntl(this->_fd, F_SETFL, fcntl(this->_fd, F_GETFL, 0) | O_NONBLOCK);
+		fcntl(this->_fd, F_SETFL, O_NONBLOCK);
 		this->test_connection(this->_fd);
 	}
 
@@ -23,10 +23,7 @@ namespace ft
 	void	SimpleSocket::test_connection(int item_to_test)
 	{
 		if (item_to_test < 0)
-		{
-			perror("Failed to connect...");
-			exit(EXIT_FAILURE);
-		}
+			std::cout << "Error : failed to connect..." << std::endl;
 	}
 
 	int	SimpleSocket::get_fd(void) const

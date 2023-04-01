@@ -1,5 +1,22 @@
 # TODO
 ## Server
+- CGI with POST
+- file upload directory
+- `Transfer-Encoding: chunked`
+- recv/send set to received/sent on error
+	- check for return value <= 0
+
+## Testing
+- siege
+- memory leak
+- hanging connections
+
+### Unsure / Need to ask
+- server hostname
+- CGI run in correct directory for relative path access
+- CGI files with error
+
+## Done
 - ~~POST method~~
 	- ~~`POST [path] http/1.1`~~
 	- ~~`200 OK / 201 Created`~~
@@ -7,9 +24,7 @@
 	- ~~`DELETE [path] http/1.1`~~
 	- ~~`200 OK`~~
 - ~~File upload~~
-- CGI
-
-## ConfigParser
+- ~~CGI~~
 - ~~Allowed methods~~
 	- ~~`allowed_methods [method]`~~
 	- ~~`405 Method Not Allowed`~~

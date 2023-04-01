@@ -47,7 +47,7 @@ namespace	ft
 			typedef map<keyType, locationValueType>	locationMapType;
 
 			ServerConfig();
-			ServerConfig&	operator = (const ServerConfig &server_config_var);
+			ServerConfig(const ServerConfig &server_config_var);
 
 			void									set_normal_directive(keyType key, normalValueType value);
 			const normalValueType&					get_normal_directive(keyType key) const;

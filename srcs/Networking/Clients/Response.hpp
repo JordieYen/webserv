@@ -1,21 +1,20 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
-// # include <bits/stdc++.h>
-
 # include <iostream>
 # include <string>
+# include <sstream>
+# include <fstream>
+# include <random>
 # include <cstring>
 # include <ctime>
 # include <cstdio>
-# include <sstream>
-# include <fstream>
 # include <fcntl.h>
 # include <dirent.h>
-# include <random>
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <sys/socket.h>
+# include <sys/wait.h>
 # include "../Servers/SimpleServer.hpp"
 # include "../Servers/ServerConfig.hpp"
 # include "Request.hpp"
@@ -34,10 +33,10 @@ namespace	ft
 			~Response(void);
 
 			bool	path_is_valid_file(string path);
-			
+
 			string	get_string_from_numeral(int	input);
 			string	get_status_message(void);
-			
+
 			string	get_closest_match(void);
 			string	get_path_to(string directive);
 			string	get_path_to_index(void);

@@ -264,11 +264,8 @@ namespace ft
 			this->_sent = true;
 		else
 			length_to_send = 50000;
-		if (fcntl(this->_request->get_client_fd(), F_GETFD) != -1)
-		{
-			if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) == -1)
-				std::cout << "Error : send returns error..." << std::endl;
-		}
+		if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) == -1)
+			std::cout << "Error : send returns error..." << std::endl;
 		this->_content = this->_content.substr(length_to_send);
 	}
 
@@ -451,7 +448,7 @@ namespace ft
 		this->_closest_match = get_closest_match();
 		this->_root = this->get_path_to("root");
 		this->_status_code = 200;
-		
+
 		if (this->_request->get_cookies_map().find("USR_KYZ") != this->_request->get_cookies_map().end())
 			this->_username = this->_server.get_cookie_value("USR_KYZ", this->_request->get_cookies_map().at("USR_KYZ"));
 

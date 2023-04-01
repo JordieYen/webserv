@@ -27,11 +27,10 @@ namespace	ft
 
 	ServerConfig::ServerConfig() {}
 
-	ServerConfig&	ServerConfig::operator = (const ServerConfig& server_config_var)
+	ServerConfig::ServerConfig(const ServerConfig& server_config_var)
 	{
 		this->_normal_directives = server_config_var._normal_directives;
 		this->_location_directives = server_config_var._location_directives;
-		return (*this);
 	}
 
 	void	ServerConfig::set_normal_directive(keyType key, normalValueType value)
@@ -53,7 +52,7 @@ namespace	ft
 	{
 		return (this->_location_directives.at(key).get_directive(location_key));
 	}
-	
+
 	const ServerConfig::locationMapType&	ServerConfig::get_location_map(void) const
 	{
 		return (this->_location_directives);
