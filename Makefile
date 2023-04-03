@@ -10,8 +10,8 @@ SRCS_FILES	= $(SRCS_DIR)/main.cpp $(wildcard $(SRCS_DIR)/*/*/*.cpp)
 OBJS_FILES	= $(SRCS_FILES:.cpp=.o)
 
 CC		= c++
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
-# CFLAGS	= -Wall -Wextra -Werror
+# CFLAGS	= -Wall -Wextra -Werror -std=c++98
+CFLAGS	= -Wall -Wextra -Werror
 FSAN	= -fsanitize=address -g3
 
 all:	$(NAME)

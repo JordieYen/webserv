@@ -3,8 +3,8 @@
 - CGI with POST
 - file upload directory
 - `Transfer-Encoding: chunked`
-- recv/send set to received/sent on error
-	- check for return value <= 0
+- ~~recv/send set to received/sent on error~~
+	- ~~check for return value <= 0~~
 
 ## Testing
 - siege
@@ -12,7 +12,7 @@
 - hanging connections
 
 ### Unsure / Need to ask
-- server hostname
+- server hostname x
 - CGI run in correct directory for relative path access
 - CGI files with error
 

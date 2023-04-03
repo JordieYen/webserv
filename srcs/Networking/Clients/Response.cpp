@@ -2,7 +2,7 @@
 
 namespace ft
 {
-	Response::Response(SimpleServer& server, Request* request) : _server(server), _config(server.get_config())
+	Response::Response(SimpleServer &server, Request *request) : _server(server), _config(server.get_config())
 	{
 		this->_request = request;
 		this->_is_autoindex = false;
@@ -11,46 +11,54 @@ namespace ft
 
 	Response::~Response(void) {}
 
-	bool	Response::path_is_valid_file(string path)
+	bool Response::path_is_valid_file(string path)
 	{
-		struct stat	path_stat;
-		int			path_exists;
+		struct stat path_stat;
+		int path_exists;
 
 		path = path.substr(path.find("/") == 0);
 		path_exists = stat(path.c_str(), &path_stat);
 		return (path_exists == 0 && (path_stat.st_mode & S_IFREG));
 	}
 
-	string	Response::get_string_from_numeral(int	input)
+	string Response::get_string_from_numeral(int input)
 	{
-		stringstream	length_stream;
+		stringstream length_stream;
 
 		length_stream << input;
 		return (length_stream.str());
 	}
 
-	string	Response::get_status_message()
+	string Response::get_status_message()
 	{
 		switch (this->_status_code)
 		{
-			case 200:	return (string("200 OK"));
-			case 204:	return (string("204 No Content"));
-			case 301:	return (string("301 Moved Permanently"));
-			case 303:	return (string("303 See Other"));
-			case 400:	return (string("400 Bad Request"));
-			case 404:	return (string("404 Not Found"));
-			case 405:	return (string("405 Method Not Allowed"));
-			case 413:	return (string("413 Payload Too Large"));
+		case 200:
+			return (string("200 OK"));
+		case 204:
+			return (string("204 No Content"));
+		case 301:
+			return (string("301 Moved Permanently"));
+		case 303:
+			return (string("303 See Other"));
+		case 400:
+			return (string("400 Bad Request"));
+		case 404:
+			return (string("404 Not Found"));
+		case 405:
+			return (string("405 Method Not Allowed"));
+		case 413:
+			return (string("413 Payload Too Large"));
 		}
 		return (string("SOMETHING REALLY BAD HAPPENED!!!"));
 	}
 
-	string	Response::get_closest_match(void)
+	string Response::get_closest_match(void)
 	{
-		string											request_path = this->_request->get_header("path");
-		ServerConfig::locationMapType					location_map = this->_config.get_location_map();
-		ServerConfig::locationMapType::reverse_iterator	path_to_check = location_map.rbegin();
-		string											closest_match = "/";
+		string request_path = this->_request->get_header("path");
+		ServerConfig::locationMapType location_map = this->_config.get_location_map();
+		ServerConfig::locationMapType::reverse_iterator path_to_check = location_map.rbegin();
+		string closest_match = "/";
 
 		while (path_to_check != location_map.rend() && closest_match.compare("/") == 0)
 		{
@@ -66,19 +74,19 @@ namespace ft
 		return (closest_match);
 	}
 
-	string	Response::get_path_to(string directive)
+	string Response::get_path_to(string directive)
 	{
 		try
 		{
 			return (this->_config.get_location_directive(this->_closest_match, directive).front());
 		}
-		catch (const std::out_of_range& e)
+		catch (const std::out_of_range &e)
 		{
 			return (this->_config.get_normal_directive(directive).front());
 		}
 	}
 
-	string	Response::get_path_to_error(void)
+	string Response::get_path_to_error(void)
 	{
 		try
 		{
@@ -87,12 +95,14 @@ namespace ft
 			if (this->path_is_valid_file(path))
 				return (path);
 		}
-		catch (const std::out_of_range& e) {}
+		catch (const std::out_of_range &e)
+		{
+		}
 
 		return (string("public/error.html"));
 	}
 
-	string	Response::get_path_to_index(void)
+	string Response::get_path_to_index(void)
 	{
 		try
 		{
@@ -102,14 +112,16 @@ namespace ft
 				return ("public/autoindex.html");
 			}
 		}
-		catch (const std::out_of_range& e) {}
+		catch (const std::out_of_range &e)
+		{
+		}
 		return (this->_root + "/" + this->get_path_to("index"));
 	}
 
-	string	Response::get_path_to_file(void)
+	string Response::get_path_to_file(void)
 	{
-		string	request_path = this->_request->get_header("path");
-		string	path_to_file;
+		string request_path = this->_request->get_header("path");
+		string path_to_file;
 
 		if (this->path_is_valid_file(request_path))
 			path_to_file = request_path.substr(1);
@@ -129,41 +141,41 @@ namespace ft
 		return (path_to_file);
 	}
 
-	string	Response::generate_random_hash(void)
+	string Response::generate_random_hash(void)
 	{
-		std::random_device	rd;
-		std::mt19937		rng(rd());
-		std::string			alnum = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		std::string			hash;
+		std::random_device rd;
+		std::mt19937 rng(rd());
+		std::string alnum = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		std::string hash;
 
 		for (int i = 0; i < 32; i++)
 			hash.push_back(alnum[std::uniform_int_distribution<int>(0, 61)(rng)]);
 		return (hash);
 	}
 
-	string	Response::generate_time_limit(int minutes)
+	string Response::generate_time_limit(int minutes)
 	{
-		time_t	t = time(NULL) + (minutes * 60);
-		struct tm* gmt_t = gmtime(&t);
+		time_t t = time(NULL) + (minutes * 60);
+		struct tm *gmt_t = gmtime(&t);
 
-		char	timestamp[30];
+		char timestamp[30];
 
 		strftime(timestamp, sizeof(timestamp), "%a, %d-%b-%Y %H:%M:%S GMT", gmt_t);
 		return (timestamp);
 	}
 
-	void	Response::append_icons(void)
+	void Response::append_icons(void)
 	{
-		string			dir_path = this->_root;
-		DIR*			dir;
-		struct dirent*	dir_entries;
+		string dir_path = this->_root;
+		DIR *dir;
+		struct dirent *dir_entries;
 
 		this->_content.append("\t\t\t<div class=\"table\">");
 		dir = opendir(dir_path.c_str());
 		while ((dir_entries = readdir(dir)) != NULL)
 		{
-			string	dir_name = dir_entries->d_name;
-			string	full_path = this->_request->get_header("path");
+			string dir_name = dir_entries->d_name;
+			string full_path = this->_request->get_header("path");
 
 			if (full_path[full_path.length() - 1] != '/')
 				full_path.push_back('/');
@@ -185,7 +197,7 @@ namespace ft
 		closedir(dir);
 	}
 
-	void	Response::handle_autoindex(string line)
+	void Response::handle_autoindex(string line)
 	{
 		if (line.compare("\t\t\t\t<p class=\"header_title\"></p>") == 0)
 		{
@@ -197,10 +209,10 @@ namespace ft
 			this->_content.append(line + "\n");
 	}
 
-	void	Response::read_file(string file_name)
+	void Response::read_file(string file_name)
 	{
-		string		line;
-		ifstream	file(file_name.c_str());
+		string line;
+		ifstream file(file_name.c_str());
 
 		if (file.is_open())
 		{
@@ -219,7 +231,7 @@ namespace ft
 			std::cout << "SOMETHING REALLY BAD HAPPEND!!!" << std::endl;
 	}
 
-	bool	Response::handle_return(void)
+	bool Response::handle_return(void)
 	{
 		this->_status_code = 301;
 		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
@@ -228,21 +240,25 @@ namespace ft
 			this->_content.append("Location: " + this->_config.get_location_directive(this->_closest_match, "return").front() + "\r\n\r\n");
 			return (true);
 		}
-		catch (const std::out_of_range& e) {}
+		catch (const std::out_of_range &e)
+		{
+		}
 		try
 		{
 			this->_content.append("Location: " + this->_config.get_normal_directive("return").front() + "\r\n\r\n");
 			return (true);
 		}
-		catch (const std::out_of_range& e) {}
+		catch (const std::out_of_range &e)
+		{
+		}
 		this->_status_code = 200;
 		this->_content.clear();
 		return (false);
 	}
 
-	void	Response::prepend_header(void)
+	void Response::prepend_header(void)
 	{
-		string	header = "HTTP/1.1 ";
+		string header = "HTTP/1.1 ";
 
 		header.append(this->get_status_message() + "\r\n");
 		if (this->_request->get_header("path").find(".ico") != string::npos)
@@ -257,22 +273,25 @@ namespace ft
 		this->_content = header;
 	}
 
-	void	Response::send_to_client(void)
+	void Response::send_to_client(void)
 	{
-		int	length_to_send = this->_content.length();
+		int length_to_send = this->_content.length();
 		if (length_to_send <= 50000)
 			this->_sent = true;
 		else
 			length_to_send = 50000;
-		if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) == -1)
+		if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) <= 0)
+		{
+			this->sent();
 			std::cout << "Error : send returns error..." << std::endl;
+		}
 		this->_content = this->_content.substr(length_to_send);
 	}
 
-	bool	Response::check_error(void)
+	bool Response::check_error(void)
 	{
-		string			request_method = this->_request->get_header("method");
-		vector<string>	allowed_methods;
+		string request_method = this->_request->get_header("method");
+		vector<string> allowed_methods;
 
 		if (request_method.empty())
 			this->_status_code = 400;
@@ -280,18 +299,18 @@ namespace ft
 		{
 			if (request_method.compare("POST") == 0)
 			{
-				string	max_size_string;
+				string max_size_string;
 				try
 				{
 					max_size_string = this->_config.get_location_directive(this->_closest_match, "client_max_body_size").front();
 				}
-				catch (const std::out_of_range& e)
+				catch (const std::out_of_range &e)
 				{
 					max_size_string = this->_config.get_normal_directive("client_max_body_size").front();
 				}
-				map<string, string>	files = this->_request->get_files_map();
-				stringstream		max_size_stream(max_size_string);
-				size_t				max_size;
+				map<string, string> files = this->_request->get_files_map();
+				stringstream max_size_stream(max_size_string);
+				size_t max_size;
 
 				max_size_stream >> max_size;
 				for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
@@ -307,7 +326,7 @@ namespace ft
 			{
 				allowed_methods = this->_config.get_location_directive(this->_closest_match, "allowed_methods");
 			}
-			catch (const std::out_of_range& e)
+			catch (const std::out_of_range &e)
 			{
 				allowed_methods = this->_config.get_normal_directive("allowed_methods");
 			}
@@ -321,7 +340,7 @@ namespace ft
 		return (true);
 	}
 
-	void	Response::handle_error(void)
+	void Response::handle_error(void)
 	{
 		if (this->_content.empty())
 		{
@@ -331,35 +350,35 @@ namespace ft
 		this->send_to_client();
 	}
 
-	bool	Response::check_cgi(void)
+	bool Response::check_cgi(void)
 	{
 		try
 		{
 			return (!this->_config.get_location_directive(this->_closest_match, "cgi_pass").empty());
 		}
-		catch (const std::out_of_range& e) {}
+		catch (const std::out_of_range &e) {}
 		return (false);
 	}
 
-	void	Response::handle_cgi(void)
+	void Response::handle_cgi(void)
 	{
 		if (this->_content.empty())
 		{
-			int		fds[2];
-			pid_t	pid;
-			string	path = this->_root + "/" + this->get_path_to("index");
+			int fds[2];
+			pid_t pid;
+			string path = this->_root + "/" + this->get_path_to("index");
 
 			pipe(fds);
 			pid = fork();
 			if (pid == 0)
 			{
-				vector<char*>	args;
+				vector<char *> args;
 
 				args.push_back(strdup("/usr/bin/python3"));
 				args.push_back(strdup(path.c_str()));
 				args.push_back(nullptr);
 
-				vector<char*>	envp;
+				vector<char *> envp;
 
 				envp.push_back(strdup(string("REQUEST_METHOD=" + this->_request->get_header("method")).c_str()));
 				envp.push_back(strdup(string("PATH_INFO=" + this->_request->get_header("path")).c_str()));
@@ -374,9 +393,21 @@ namespace ft
 			else if (pid > 0)
 			{
 				close(fds[1]);
-				waitpid(pid, NULL, 0);
 
-				char*	buffer = static_cast<char*>(calloc(65535 * sizeof(char), sizeof(char)));
+				int fork_status;
+				int time = 0;
+				int	time_limit = 30;
+				while (time++ < time_limit)
+				{
+					sleep(1);
+					waitpid(-1, &fork_status, WNOHANG);
+					if (WIFEXITED(fork_status))
+						break;
+				}
+				if (time == time_limit)
+					kill(pid, SIGTERM);
+
+				char *buffer = static_cast<char *>(calloc(65535 * sizeof(char), sizeof(char)));
 
 				read(fds[0], buffer, 65535);
 				this->_content.append(buffer);
@@ -389,7 +420,7 @@ namespace ft
 		this->send_to_client();
 	}
 
-	void	Response::handle_get(void)
+	void Response::handle_get(void)
 	{
 		if (this->_content.empty())
 		{
@@ -402,13 +433,13 @@ namespace ft
 		this->send_to_client();
 	}
 
-	void	Response::handle_post(void)
+	void Response::handle_post(void)
 	{
-		map<string, string>	files = this->_request->get_files_map();
+		map<string, string> files = this->_request->get_files_map();
 
 		for (map<string, string>::iterator file = files.begin(); file != files.end(); file++)
 		{
-			ofstream	new_file((this->_root + "/" + file->first).c_str());
+			ofstream new_file((this->_root + "/" + file->first).c_str());
 
 			new_file << file->second;
 			new_file.close();
@@ -418,7 +449,7 @@ namespace ft
 
 		if (this->_request->get_body_map().find("username") != this->_request->get_body_map().end())
 		{
-			string	hash = this->generate_random_hash();
+			string hash = this->generate_random_hash();
 
 			this->_server.set_cookie("USR_KYZ", hash, this->_request->get_body_map().at("username"));
 			this->_content.append("Location: /homepage\r\n");
@@ -429,9 +460,9 @@ namespace ft
 		this->send_to_client();
 	}
 
-	void	Response::handle_delete(void)
+	void Response::handle_delete(void)
 	{
-		string	request_path = this->_request->get_header("path");
+		string request_path = this->_request->get_header("path");
 
 		if (this->_closest_match == request_path)
 			this->_status_code = 405;
@@ -443,7 +474,7 @@ namespace ft
 		this->send_to_client();
 	}
 
-	void	Response::handle_methods(void)
+	void Response::handle_methods(void)
 	{
 		this->_closest_match = get_closest_match();
 		this->_root = this->get_path_to("root");
@@ -464,7 +495,7 @@ namespace ft
 			this->handle_delete();
 	}
 
-	bool	Response::sent(void)
+	bool Response::sent(void)
 	{
 		if (this->_sent)
 		{

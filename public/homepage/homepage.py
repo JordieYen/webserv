@@ -1,6 +1,10 @@
 import os
 from datetime import datetime as dt
 
+# 
+# while (1):
+# 	print("test");
+
 def	append_icons(full_path, is_window):
 	icons = ""
 

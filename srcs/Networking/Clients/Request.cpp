@@ -16,8 +16,11 @@ namespace	ft
 		char*	buffer = static_cast<char*>(calloc(65536 * sizeof(char), sizeof(char)));
 
 		if ((read_bytes = recv(this->_client_fd, buffer, 65536, 0)) < 0)
+		{
+			this->_received = true;
 			std::cout << "Error : recv returns error..." << std::endl;
-		if (strcmp(buffer, "\r\n") != 0 || !this->_content.empty())
+		}
+		else if (strcmp(buffer, "\r\n") != 0 || !this->_content.empty())
 			this->_content.append(buffer, read_bytes);
 		free(buffer);
 	}
