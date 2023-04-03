@@ -55,7 +55,8 @@ namespace ft
 	{
 		while (true)
 		{
-			if ((poll(this->_pollfds.data(), this->_pollfds.size(), 1000)) < 0)
+			int rc = poll(this->_pollfds.data(), this->_pollfds.size(), 1000);
+			if (rc < 0)
 				std::cout << "Error : poll returns error..." << std::endl;
 			// log("Poll loop", "");
 			// log("Poll size", this->_pollfds.size());

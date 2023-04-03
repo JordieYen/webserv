@@ -33,22 +33,14 @@ namespace ft
 	{
 		switch (this->_status_code)
 		{
-		case 200:
-			return (string("200 OK"));
-		case 204:
-			return (string("204 No Content"));
-		case 301:
-			return (string("301 Moved Permanently"));
-		case 303:
-			return (string("303 See Other"));
-		case 400:
-			return (string("400 Bad Request"));
-		case 404:
-			return (string("404 Not Found"));
-		case 405:
-			return (string("405 Method Not Allowed"));
-		case 413:
-			return (string("413 Payload Too Large"));
+			case 200:	return (string("200 OK"));
+			case 204:	return (string("204 No Content"));
+			case 301:	return (string("301 Moved Permanently"));
+			case 303:	return (string("303 See Other"));
+			case 400:	return (string("400 Bad Request"));
+			case 404:	return (string("404 Not Found"));
+			case 405:	return (string("405 Method Not Allowed"));
+			case 413:	return (string("413 Payload Too Large"));
 		}
 		return (string("SOMETHING REALLY BAD HAPPENED!!!"));
 	}
@@ -95,10 +87,7 @@ namespace ft
 			if (this->path_is_valid_file(path))
 				return (path);
 		}
-		catch (const std::out_of_range &e)
-		{
-		}
-
+		catch (const std::out_of_range &e) {}
 		return (string("public/error.html"));
 	}
 
@@ -112,9 +101,7 @@ namespace ft
 				return ("public/autoindex.html");
 			}
 		}
-		catch (const std::out_of_range &e)
-		{
-		}
+		catch (const std::out_of_range &e) {}
 		return (this->_root + "/" + this->get_path_to("index"));
 	}
 
@@ -240,17 +227,13 @@ namespace ft
 			this->_content.append("Location: " + this->_config.get_location_directive(this->_closest_match, "return").front() + "\r\n\r\n");
 			return (true);
 		}
-		catch (const std::out_of_range &e)
-		{
-		}
+		catch (const std::out_of_range &e) {}
 		try
 		{
 			this->_content.append("Location: " + this->_config.get_normal_directive("return").front() + "\r\n\r\n");
 			return (true);
 		}
-		catch (const std::out_of_range &e)
-		{
-		}
+		catch (const std::out_of_range &e) {}
 		this->_status_code = 200;
 		this->_content.clear();
 		return (false);
@@ -261,15 +244,19 @@ namespace ft
 		string header = "HTTP/1.1 ";
 
 		header.append(this->get_status_message() + "\r\n");
-		if (this->_request->get_header("path").find(".ico") != string::npos)
-			header.append("Content-Type: image/x-icon\r\n");
+		if (this->_status_code == 301)
+			header.append("Location: " + this->_request->get_header("referrer"));
 		else
-			header.append("Content-Type: */*; charset=utf-8\r\n");
-		header.append("Content-Length: ");
-		header.append(this->get_string_from_numeral(this->_content.length()));
+		{
+			if (this->_request->get_header("path").find(".ico") != string::npos)
+				header.append("Content-Type: image/x-icon\r\n");
+			else
+				header.append("Content-Type: */*; charset=utf-8\r\n");
+			header.append("Content-Length: ");
+			header.append(this->get_string_from_numeral(this->_content.length()));
+		}
 		header.append("\r\n\r\n");
 		header.append(this->_content);
-		this->_content.clear();
 		this->_content = header;
 	}
 
@@ -282,7 +269,7 @@ namespace ft
 			length_to_send = 50000;
 		if (send(this->_request->get_client_fd(), this->_content.substr(0, length_to_send).c_str(), length_to_send, 0) <= 0)
 		{
-			this->sent();
+			this->_sent = true;
 			std::cout << "Error : send returns error..." << std::endl;
 		}
 		this->_content = this->_content.substr(length_to_send);
@@ -364,39 +351,72 @@ namespace ft
 	{
 		if (this->_content.empty())
 		{
-			int fds[2];
+			int read_pipe[2];
+			int	write_pipe[2];
 			pid_t pid;
-			string path = this->_root + "/" + this->get_path_to("index");
+			string path = this->get_path_to("index");
 
-			pipe(fds);
+			pipe(read_pipe);
+			if (this->_request->get_header("method") == "POST")
+				pipe(write_pipe);
+
 			pid = fork();
 			if (pid == 0)
 			{
 				vector<char *> args;
+				vector<char *> envp;
 
 				args.push_back(strdup("/usr/bin/python3"));
 				args.push_back(strdup(path.c_str()));
 				args.push_back(nullptr);
 
-				vector<char *> envp;
-
 				envp.push_back(strdup(string("REQUEST_METHOD=" + this->_request->get_header("method")).c_str()));
 				envp.push_back(strdup(string("PATH_INFO=" + this->_request->get_header("path")).c_str()));
 				envp.push_back(strdup(string("USERNAME=" + this->_username).c_str()));
+				envp.push_back(strdup(string("CONTENT_TYPE=" + this->_request->get_content_context("Content-Type")).c_str()));
+				envp.push_back(strdup(string("CONTENT_LENGTH=" + this->_request->get_content_context("Content-Length")).c_str()));
+				envp.push_back(strdup(string("FORM_BOUNDARY=" + this->_request->get_content_context("Form-Boundary")).c_str()));
 				envp.push_back(nullptr);
 
-				dup2(fds[1], STDOUT_FILENO);
-				close(fds[1]);
-				close(fds[0]);
+				dup2(read_pipe[1], STDOUT_FILENO);
+				close(read_pipe[1]);
+				close(read_pipe[0]);
+
+				if (this->_request->get_header("method") == "POST")
+				{
+					dup2(write_pipe[0], STDIN_FILENO);
+					close(write_pipe[0]);
+					close(write_pipe[1]);
+				}
+
+				chdir(this->_root.c_str());
 				execve("/usr/bin/python3", args.data(), envp.data());
 			}
 			else if (pid > 0)
 			{
-				close(fds[1]);
+				if (this->_request->get_header("method") == "POST")
+				{
+					string	body = this->_request->get_content_body();
+					size_t	length_to_write = 50000;
+
+					if (body.length() < length_to_write)
+						length_to_write = body.length();
+					while (length_to_write > 0)
+					{
+						write(write_pipe[1], body.substr(0, length_to_write).c_str(), length_to_write);
+						body = body.substr(length_to_write);
+						if (length_to_write > body.length())
+							length_to_write = body.length();
+					}
+					close(write_pipe[0]);
+					close(write_pipe[1]);
+				}
+				close(read_pipe[1]);
 
 				int fork_status;
 				int time = 0;
 				int	time_limit = 30;
+
 				while (time++ < time_limit)
 				{
 					sleep(1);
@@ -409,12 +429,14 @@ namespace ft
 
 				char *buffer = static_cast<char *>(calloc(65535 * sizeof(char), sizeof(char)));
 
-				read(fds[0], buffer, 65535);
+				read(read_pipe[0], buffer, 65535);
 				this->_content.append(buffer);
 				free(buffer);
 			}
 			else
 				std::cout << "Error : fork returns error..." << std::endl;
+			if (this->_request->get_header("method") == "POST")
+				this->_status_code = 301;
 			this->prepend_header();
 		}
 		this->send_to_client();
@@ -444,19 +466,19 @@ namespace ft
 			new_file << file->second;
 			new_file.close();
 		}
-		this->_status_code = 301;
-		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
 
+		this->_status_code = 301;
 		if (this->_request->get_body_map().find("username") != this->_request->get_body_map().end())
 		{
 			string hash = this->generate_random_hash();
 
+			this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
 			this->_server.set_cookie("USR_KYZ", hash, this->_request->get_body_map().at("username"));
 			this->_content.append("Location: /homepage\r\n");
 			this->_content.append("Set-Cookie: USR_KYZ=" + hash + "; Expires=" + this->generate_time_limit(5) + "\r\n\r\n");
 		}
 		else
-			this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n");
+			this->prepend_header();
 		this->send_to_client();
 	}
 
@@ -469,8 +491,7 @@ namespace ft
 		else if (remove((this->_root + request_path.substr(this->_closest_match.length())).c_str()) != 0)
 			this->_status_code = 204;
 		this->_status_code = 301;
-		this->_content.append("HTTP/1.1 " + this->get_status_message() + "\r\n");
-		this->_content.append("Location: " + this->_request->get_header("referrer") + "\r\n\r\n");
+		this->prepend_header();
 		this->send_to_client();
 	}
 

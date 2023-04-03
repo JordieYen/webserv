@@ -153,6 +153,7 @@ namespace	ft
 		stringstream	body_stream(this->_content.substr(0, content_length));
 		string			pair;
 
+		this->_content_body = this->_content;
 		while (getline(body_stream, pair, '&'))
 		{
 			if (pair.find('=') != string::npos)
@@ -173,10 +174,11 @@ namespace	ft
 		string	first_line;
 		string	name;
 
-		while (this->_content.compare("\r\n") != 0)
+		this->_content_body = this->_content;
+		while (this->_content != "\r\n")
 		{
 			this->_content = this->_content.substr(this->_content.find("--" + this->_content_context.at("Form-Boundary:")) + this->_content_context.at("Form-Boundary:").length() + 4);
-			if (this->_content.compare("\r\n") != 0)
+			if (this->_content != "\r\n")
 			{
 				part = this->_content.substr(0, this->_content.find("--" + this->_content_context.at("Form-Boundary:")));
 				first_line = part.substr(0, part.find("\r\n"));
@@ -224,6 +226,7 @@ namespace	ft
 		this->_received = false;
 		this->_content.clear();
 		this->_content_context.clear();
+		this->_content_body.clear();
 		this->_method.clear();
 		this->_path.clear();
 		this->_referrer.clear();
@@ -241,25 +244,42 @@ namespace	ft
 	{
 		if (key == "path")
 			return (this->_path);
-		else if (key == "method")
+		if (key == "method")
 			return (this->_method);
-		else if (key == "referrer")
+		if (key == "referrer")
 			return (this->_referrer);
-		else
-			return ("Not Found");
+		return ("Not Found");
 	}
 
-	map<string, string>&	Request::get_body_map()
+	string	Request::get_content_context(string key) const
+	{
+		if (this->_content_context.empty())
+			return (string());
+		if (key == "Content-Type")
+			return (this->_content_context.at("Content-Type:"));
+		if (key == "Content-Length")
+			return (this->_content_context.at("Content-Length:"));
+		if (key == "Form-Boundary")
+			return (this->_content_context.at("Form-Boundary:"));
+		return ("Not Found");
+	}
+
+	const string&	Request::get_content_body(void) const
+	{
+		return (this->_content_body);
+	}
+
+	const map<string, string>&	Request::get_body_map(void) const
 	{
 		return (this->_body);
 	}
 
-	map<string, string>&	Request::get_files_map()
+	const map<string, string>&	Request::get_files_map(void) const
 	{
 		return (this->_files);
 	}
 
-	map<string, string>&	Request::get_cookies_map()
+	const map<string, string>&	Request::get_cookies_map(void) const
 	{
 		return (this->_cookies);
 	}

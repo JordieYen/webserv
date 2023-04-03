@@ -1,14 +1,16 @@
 import os
+import sys
 from datetime import datetime as dt
 
 # 
 # while (1):
 # 	print("test");
 
+
 def	append_icons(full_path, is_window):
 	icons = ""
 
-	for file in os.listdir("public/" + full_path):
+	for file in os.listdir(full_path):
 		if is_window:
 			icons += "\t\t\t\t\t<div class=\"icon\">\n"
 			icons += "\t\t\t\t\t\t<input type=\"checkbox\" id=_" + file + " onclick=\"toggle_trash(this)\"/>\n"
@@ -28,7 +30,7 @@ def	append_icons(full_path, is_window):
 	return (icons)
 
 def generate_homepage(full_path):
-	with open("public/homepage/homepage.html") as homepage:
+	with open("homepage.html") as homepage:
 		for line in homepage:
 			if line.startswith("\t\t\t\twindow.location.href"):
 				line = line[:28] + "/" + full_path + line[28:]
@@ -45,13 +47,36 @@ def generate_homepage(full_path):
 			print(line, end = '')
 
 def	generate_login():
-	with open("public/homepage/login.html") as login:
+	with open("login.html") as login:
 		for line in login:
 			print(line, end = '')
 
-if (os.environ.get("USERNAME")):
-	full_path = "users/" + os.environ.get("USERNAME")
-	os.makedirs("public/" + full_path, exist_ok = True)
-	generate_homepage(full_path)
-else:
-	generate_login()
+def	save_file(full_path, body, boundary):
+	header_done = False
+	for line in body:
+		if "filename" in line:
+			name = line[line.rfind('=') + 2:-3]
+		if header_done:
+			if ("--" + boundary + "--") in line:
+				new_file.close()
+			elif boundary not in line:
+				new_file.write(line.encode("utf-8", "surrogateescape"))
+		elif line == "\r\n":
+			new_file = open(full_path + "/" + name, 'wb')
+			header_done = True
+	
+
+full_path = "../users/" + os.environ.get("USERNAME")
+os.makedirs(full_path, exist_ok = True)
+
+if (os.environ.get("REQUEST_METHOD") == "GET"):
+	if (os.environ.get("USERNAME")):
+		generate_homepage(full_path)
+	else:
+		generate_login()
+elif (os.environ.get("REQUEST_METHOD") == "POST"):
+	body = []
+	for line in sys.stdin:
+		body.append(line)
+	if (os.environ.get("CONTENT_TYPE") == "multipart/form-data"):
+		save_file(full_path, body, os.environ.get("FORM_BOUNDARY"))

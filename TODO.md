@@ -1,8 +1,11 @@
 # TODO
 ## Server
-- CGI with POST
 - file upload directory
 - `Transfer-Encoding: chunked`
+- 2nd CGI
+	- Display env variables
+	- Display form data from POST
+- ~~CGI with POST (homepage file upload)~~
 - ~~recv/send set to received/sent on error~~
 	- ~~check for return value <= 0~~
 
@@ -11,10 +14,10 @@
 - memory leak
 - hanging connections
 
-### Unsure / Need to ask
-- server hostname x
-- CGI run in correct directory for relative path access
-- CGI files with error
+### ~~Unsure / Need to ask~~
+- ~~server hostname (NO NEED TO DO)~~
+- ~~CGI run in correct directory for relative path access~~
+- ~~CGI files with error~~
 
 ## Done
 - ~~POST method~~
