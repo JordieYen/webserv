@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			function toggle_window(class_name)	{
+				document.getElementsByClassName(class_name)[0].style.display = document.getElementsByClassName(class_name)[0].style.display == "none" ? "flex" : "none";
+			}
+			function submit_form()	{
+				document.getElementById("cgi_form").submit();
+			}
+		</script>
+		<style>
+			html	{
+				background-image: url('eulee_background.jpg');
+				background-size: cover;
+				height: 100%;
+				overflow: hidden;
+				user-select: none;
+			}
+			body	{
+				height: 100%;
+				width: 100%;
+				margin: 0 auto;
+			}
+			img	{
+				object-fit: contain;
+			}
+			.window	{
+				background-color: white;
+				border-radius: 5px;
+				flex-direction: column;
+				text-align: center;
+				overflow: hidden;
+				height: 50%;
+				width: 50%;
+				position: relative;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				border: 1px solid rgb(179,179,179);
+			}
+			.header	{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 4.5%;
+				background-image: linear-gradient(to bottom, #e4e4e4 , #cecece);
+				border-bottom: 1px solid rgb(179,179,179);
+			}
+			.header_title	{
+				font-family: 'Lucida Grande';
+				font-size: 0.77em;
+				color: #505050;
+				margin-left: 5px;
+			}
+			.left_buttons	{
+				position: absolute;
+				margin-right: 93.4%;
+			}
+			.button	{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				margin: 2px;
+				margin-top: 7px;
+				border-radius: 50%;
+			}
+			.header_window	{
+				background-color: rgba(128, 128, 128, 0.5);
+				border-radius: 5px;
+				flex-direction: column;
+				text-align: center;
+				overflow: hidden;
+				height: 50%;
+				width: 50%;
+				border: 1px solid rgb(179,179,179);
+				margin-left: 25%;
+				margin-top: 10%;
+			}
+			.cgi_header	{
+				font-family: 'Lucida Grande';
+				margin: 3.5% auto;
+			}
+			.cgi_field	{
+				border-radius: 5px;
+				margin-bottom: 9px;
+				border: none;
+				padding: 5px 7px;
+				color: white;
+				font-family: 'Lucida Grande';
+				line-height: 20px;
+				backdrop-filter: blur(14px);
+				background: rgba(128, 128, 128, 0.5);
+			}
+			.cgi_field:focus	{
+				outline-width: 0;
+			}
+			::placeholder	{
+				color: rgba(255, 255, 255, 0.75);
+				font-family: 'Lucida Grande';
+			}
+			.cgi_siri	{
+				display: inline-block;
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="window" style="display: flex">
+			<div class="header">
+				<div class="left_buttons">
+					<span class="button" style="background-color: rgb(255, 98, 89);" onclick="toggle_window('window')"></span>
+					<span class="button" style="background-color: rgb(255, 195, 50);" onclick="toggle_window('window')"></span>
+					<span class="button" style="background-color: rgb(46, 208, 66);" onclick="toggle_window('window')"></span>
+				</div>
+				<img src="icons/siri.png" height="15" width="15">
+				<p class="header_title">CGI</p>
+			</div>
+			<div class="header_window">
+				<div class="header">
+					<img src="icons/siri.png" height="15" width="15">
+					<p class="header_title">Data</p>
+				</div>
+				<h5 class="cgi_header">Request Method<br></h5>
+				<h5 class="cgi_header">Request Path<br></h5>
+				<h5 class="cgi_header">Content-Type<br></h5>
+				<h5 class="cgi_header">Content-Length<br></h5>
+				<h5 class="cgi_header">Request Body<br></h5>
+			</div>
+			<div class="cgi_form">
+				<form id="cgi_form" action="/cgi" method="post" enctype="multipart/form-data">
+					<input class="cgi_field" name="input" type="text" placeholder="Enter">
+					<input type="submit" hidden>
+					<div class="cgi_siri">
+						<img src="icons/siri.png" height="40" width="40" onclick="submit_form()">
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

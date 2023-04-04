@@ -11,7 +11,6 @@ namespace ft
 		this->_address.sin_addr.s_addr = htonl(interface);
 		this->_fd = socket(domain, service, protocol);
 		setsockopt(this->_fd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
-		fcntl(this->_fd, F_SETFL, O_NONBLOCK);
 		this->test_connection(this->_fd);
 	}
 

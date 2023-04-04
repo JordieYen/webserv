@@ -1,0 +1,20 @@
+POST /cgi HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryFnw7FPyh876JzSht
+Transfer-Encoding: chunked
+Referer: http://localhost/cgi
+
+2A
+------WebKitFormBoundaryFnw7FPyh876JzSht
+
+30
+Content-Disposition: form-data; name="input"
+
+
+C
+chunk test
+
+2C
+------WebKitFormBoundaryFnw7FPyh876JzSht--
+
+0
+

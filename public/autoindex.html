@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<script>
+			function toggle_finder(class_name)	{
+				document.getElementsByClassName(class_name)[0].style.display = document.getElementsByClassName(class_name)[0].style.display == "none" ? "flex" : "none";
+			}
+		</script>
 		<style>
 			html	{
 				background-image: url('eulee_background.jpg');
 				background-size: cover;
 				height: 100%;
 				overflow: hidden;
+				user-select: none;
 			}
 			body	{
 				height: 100%;
@@ -19,7 +25,6 @@
 			.window	{
 				background-color: white;
 				border-radius: 5px;
-				display: flex;
 				flex-direction: column;
 				overflow: hidden;
 				height: 50%;
@@ -75,12 +80,12 @@
 		</style>
 	</head>
 	<body>
-		<div class="window">
+		<div class="window" style="display: flex">
 			<div class="header">
 				<div class="left_buttons">
-					<a href="/public/eulee_background.jpg"><span class="button" style="background-color: rgb(255, 98, 89);"></span></a>
-					<a href="/public/eulee_background.jpg"><span class="button" style="background-color: rgb(255, 195, 50);"></span></a>
-					<span class="button" style="background-color: rgb(46, 208, 66);"></span>
+					<span class="button" style="background-color: rgb(255, 98, 89);" onclick="toggle_finder('window')"></span>
+					<span class="button" style="background-color: rgb(255, 195, 50);" onclick="toggle_finder('window')"></span>
+					<span class="button" style="background-color: rgb(46, 208, 66);" onclick="toggle_finder('window')"></span>
 				</div>
 				<img src="icons/folder_256.png" height="15" width="15">
 				<p class="header_title"></p>

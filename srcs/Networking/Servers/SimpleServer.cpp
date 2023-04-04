@@ -16,7 +16,7 @@ namespace	ft
 		istringstream	port_stream(this->_config.get_normal_directive("listen").front());
 		
 		port_stream >> port;
-		this->_socket = new ListeningSocket(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, 10);
+		this->_socket = new ListeningSocket(AF_INET, SOCK_STREAM, 0, port, INADDR_ANY, SOMAXCONN);
 		this->_cookies.insert(make_pair("USR_KYZ", usernameMapType()));
 		this->_port = port;
 	}

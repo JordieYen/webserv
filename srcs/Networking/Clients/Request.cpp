@@ -48,7 +48,6 @@ namespace	ft
 
 	void	Request::set_bad_request(void)
 	{
-		std::cout << "invalid request!" << std::endl;
 		this->_content.clear();
 		this->_received = true;
 	}
@@ -93,11 +92,6 @@ namespace	ft
 				}
 			}
 		}
-		// for (map<string, string>::iterator cookie = this->_cookies.begin(); cookie != this->_cookies.end(); cookie++)
-		// {
-		// 	std::cout << "cookie [" << cookie->first << "][" << cookie->second << "]" << std::endl;
-		// }
-		// std::cout << this->_content << std::endl;
 	}
 
 	void	Request::parse_cookies(string line)
@@ -119,12 +113,10 @@ namespace	ft
 		try
 		{
 			this->_content_context.at(context);
-			return (this->_content_context.at(context).compare(value) == 0);
+			return (this->_content_context.at(context) == value);
 		}
-		catch (const std::out_of_range& e)
-		{
-			return (false);
-		}
+		catch (const std::out_of_range& e) {}
+		return (false);
 	}
 
 	bool	Request::body_has_minimum_length(void)
@@ -137,17 +129,15 @@ namespace	ft
 			content_length_stream >> content_length;
 			return (this->_content.length() >= content_length);
 		}
-		catch (const std::out_of_range& e)
-		{
-			return (false);
-		}
+		catch (const std::out_of_range& e) {}
+		return (false);
 	}
 
 	void	Request::parse_chunked_encoded(void)
 	{
 		string	chunked_encoded_format;
 		size_t	chunked_size;
-		int		content_length;
+		int		content_length = 0;
 
 		this->_content_body = this->_content;
 		this->_content.clear();
@@ -187,10 +177,6 @@ namespace	ft
 			else
 				this->_body.insert(make_pair(pair, ""));
 		}
-		// for (std::map<string, string>::iterator it = this->_body.begin(); it != this->_body.end(); it++)
-		// {
-		// 	std::cout << "[" << it->first << "]=[" << it->second << "]" << std::endl;
-		// }
 		this->_received = true;
 	}
 
@@ -234,7 +220,7 @@ namespace	ft
 				this->set_bad_request();
 			else
 				this->parse_header();
-			if (this->_method.compare("POST") == 0)
+			if (this->_method == "POST")
 				this->_content = this->_content.substr(this->_content.find("\r\n\r\n") + 4, this->_content.length());
 			else
 				this->_received = true;

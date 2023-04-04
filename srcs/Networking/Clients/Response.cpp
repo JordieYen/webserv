@@ -52,7 +52,7 @@ namespace ft
 		ServerConfig::locationMapType::reverse_iterator path_to_check = location_map.rbegin();
 		string closest_match = "/";
 
-		while (path_to_check != location_map.rend() && closest_match.compare("/") == 0)
+		while (path_to_check != location_map.rend() && closest_match == "/")
 		{
 			if (request_path.find(path_to_check->first) == 0)
 			{
@@ -144,7 +144,6 @@ namespace ft
 	{
 		time_t t = time(NULL) + (minutes * 60);
 		struct tm *gmt_t = gmtime(&t);
-
 		char timestamp[30];
 
 		strftime(timestamp, sizeof(timestamp), "%a, %d-%b-%Y %H:%M:%S GMT", gmt_t);
@@ -186,11 +185,9 @@ namespace ft
 
 	void Response::handle_autoindex(string line)
 	{
-		if (line.compare("\t\t\t\t<p class=\"header_title\"></p>") == 0)
-		{
+		if (line == "\t\t\t\t<p class=\"header_title\"></p>")
 			this->_content.append(line.substr(0, line.length() - 4) + this->_root + "</p>");
-		}
-		else if (line.compare("\t\t\t<div class=\"table\">") == 0)
+		else if (line == "\t\t\t<div class=\"table\">")
 			this->append_icons();
 		else
 			this->_content.append(line + "\n");
@@ -207,7 +204,7 @@ namespace ft
 			{
 				if (this->_is_autoindex)
 					this->handle_autoindex(line);
-				else if (this->_status_code != 200 && line.compare("\t<body>") == 0 && file_name == "public/error.html")
+				else if (this->_status_code != 200 && line == "\t<body>" && file_name == "public/error.html")
 					this->_content.append("\t\t<h1>" + this->get_status_message() + "</h1>\n");
 				else
 					this->_content.append(line + "\n");
@@ -284,7 +281,7 @@ namespace ft
 			this->_status_code = 400;
 		else
 		{
-			if (request_method.compare("POST") == 0)
+			if (request_method == "POST")
 			{
 				string max_size_string;
 				try
@@ -319,7 +316,7 @@ namespace ft
 			}
 			for (vector<string>::iterator method = allowed_methods.begin(); method != allowed_methods.end(); method++)
 			{
-				if (method->compare(request_method) == 0)
+				if (*method == request_method)
 					return (false);
 			}
 			this->_status_code = 405;
@@ -432,11 +429,10 @@ namespace ft
 				read(read_pipe[0], buffer, 65535);
 				this->_content.append(buffer);
 				free(buffer);
-
 			}
 			else
 				std::cout << "Error : fork returns error..." << std::endl;
-			if (this->_request->get_header("method") == "POST")
+			if (this->_request->get_header("method") == "POST" && !this->_request->get_files_map().empty())
 				this->_status_code = 301;
 			this->prepend_header();
 		}

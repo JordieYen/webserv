@@ -1,18 +1,18 @@
 # TODO
 ## Server
-- file upload directory
-- `Transfer-Encoding: chunked`
-- 2nd CGI
-	- Display env variables
-	- Display form data from POST
+- ~~file upload directory (DECIDED NOT TO DO)~~
+- ~~`Transfer-Encoding: chunked`~~
+- ~~2nd CGI~~
+	- ~~Display env variables~~
+	- ~~Display form data from POST~~
 - ~~CGI with POST (homepage file upload)~~
 - ~~recv/send set to received/sent on error~~
 	- ~~check for return value <= 0~~
 
 ## Testing
-- siege
-- memory leak
-- hanging connections
+- ~~siege~~
+- ~~memory leak~~
+- ~~hanging connections~~
 
 ### ~~Unsure / Need to ask~~
 - ~~server hostname (NO NEED TO DO)~~
