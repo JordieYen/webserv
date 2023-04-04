@@ -432,6 +432,7 @@ namespace ft
 				read(read_pipe[0], buffer, 65535);
 				this->_content.append(buffer);
 				free(buffer);
+
 			}
 			else
 				std::cout << "Error : fork returns error..." << std::endl;

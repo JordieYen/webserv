@@ -50,6 +50,7 @@ namespace ft
 
 			bool	context_equals(string context, string value);
 			bool	body_has_minimum_length(void);
+			void	parse_chunked_encoded(void);
 			void	parse_urlencoded_body(void);
 			void	parse_multipart_body(void);
 

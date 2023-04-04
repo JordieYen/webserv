@@ -139,9 +139,35 @@ namespace	ft
 		}
 		catch (const std::out_of_range& e)
 		{
-			this->_content_context.insert(make_pair("Content-Length:", "0"));
-			return (true);
+			return (false);
 		}
+	}
+
+	void	Request::parse_chunked_encoded(void)
+	{
+		string	chunked_encoded_format;
+		size_t	chunked_size;
+		int		content_length;
+
+		this->_content_body = this->_content;
+		this->_content.clear();
+		while (this->_content_body.size() > 0)
+		{
+			if (this->_content_body.find("\r\n") != string::npos)
+			{
+				chunked_encoded_format = this->_content_body.substr(0, this->_content_body.find("\r\n"));
+				chunked_size = 0;
+				std::istringstream(chunked_encoded_format) >> std::hex >> chunked_size;
+				content_length += chunked_size;
+				this->_content_body = this->_content_body.substr(this->_content_body.find("\r\n") + 2);
+			}
+			this->_content.append(this->_content_body.substr(0, chunked_size));
+			this->_content_body = this->_content_body.substr(chunked_size + 2);
+		}
+		stringstream str_content_length;
+		str_content_length << content_length;
+		this->_content_context.insert(make_pair(string("Content-Length:"), str_content_length.str()));
+		this->_content_body.clear();
 	}
 
 	void	Request::parse_urlencoded_body(void)
@@ -213,6 +239,8 @@ namespace	ft
 			else
 				this->_received = true;
 		}
+		if (this->context_equals("Transfer-Encoding:", "chunked") && this->_content.find("0\r\n\r\n") != string::npos)
+			this->parse_chunked_encoded();
 		if (this->context_equals("Content-Type:", "application/x-www-form-urlencoded") &&
 			this->body_has_minimum_length())
 			this->parse_urlencoded_body();
@@ -253,15 +281,17 @@ namespace	ft
 
 	string	Request::get_content_context(string key) const
 	{
-		if (this->_content_context.empty())
-			return (string());
-		if (key == "Content-Type")
-			return (this->_content_context.at("Content-Type:"));
-		if (key == "Content-Length")
-			return (this->_content_context.at("Content-Length:"));
-		if (key == "Form-Boundary")
-			return (this->_content_context.at("Form-Boundary:"));
-		return ("Not Found");
+		try
+		{
+			if (key == "Content-Type")
+				return (this->_content_context.at("Content-Type:"));
+			if (key == "Content-Length")
+				return (this->_content_context.at("Content-Length:"));
+			if (key == "Form-Boundary")
+				return (this->_content_context.at("Form-Boundary:"));
+		}
+		catch (const std::out_of_range& e) {}
+		return (string());
 	}
 
 	const string&	Request::get_content_body(void) const
