@@ -20,16 +20,6 @@ namespace ft
 			delete *client;
 	}
 
-	bool	WebServer::current_pollfd_is(int event)
-	{
-		return (this->_pollfds[this->_current_pollfd_index].revents & event);
-	}
-
-	void	WebServer::set_current_pollfd_to(int event)
-	{
-		this->_pollfds[this->_current_pollfd_index].events = event;
-	}
-
 	void	WebServer::setup(void)
 	{
 		signal(SIGPIPE, SIG_IGN);
@@ -59,37 +49,20 @@ namespace ft
 			if (rc < 0)
 				std::cout << "Error : poll returns error..." << std::endl;
 			this->_current_pollfd_index = 0;
-			for (serverMapType::iterator server = this->_servers.begin(); server != this->_servers.end(); server++)
+			for (serverIterType server = this->_servers.begin(); server != this->_servers.end(); server++)
 			{
 				if (!this->current_pollfd_is(0) && this->current_pollfd_is(POLLIN))
-				{
-					int	client_fd = server->second->accept_connection();
-					if (client_fd != -1)
-					{
-						Client*		new_client = new Client(*(server->second), client_fd);
-						pollFdType	new_pollfd;
-
-						new_pollfd.fd = client_fd;
-						new_pollfd.events = POLLIN;
-						this->_pollfds.push_back(new_pollfd);
-						this->_clients.push_back(new_client);
-					}
-				}
+					this->accept_connection(server);
 				this->_current_pollfd_index++;
 			}
-			for (clientArrayType::iterator client = this->_clients.begin(); client != this->_clients.end(); client++)
+			for (clientIterType client = this->_clients.begin(); client != this->_clients.end(); client++)
 			{
 				if (!this->current_pollfd_is(0))
 				{
 					Client*	current_client = (*client);
 
 					if (this->current_pollfd_is(POLLHUP))
-					{
-						close(this->_pollfds[this->_current_pollfd_index].fd);
-						this->_pollfds.erase(this->_pollfds.begin() + this->_current_pollfd_index--);
-						delete *client;
-						client = this->_clients.erase(client) - 1;
-					}
+						client = this->close_connection(client);
 					else if (this->current_pollfd_is(POLLIN))
 					{
 						current_client->handle_request();
@@ -100,17 +73,44 @@ namespace ft
 					{
 						current_client->handle_response();
 						if (current_client->sent_response())
-						{
-							// this->set_current_pollfd_to(POLLIN);
-							close(this->_pollfds[this->_current_pollfd_index].fd);
-							this->_pollfds.erase(this->_pollfds.begin() + this->_current_pollfd_index--);
-							delete *client;
-							client = this->_clients.erase(client) - 1;
-						}
+							client = this->close_connection(client);
 					}
 				}
 				this->_current_pollfd_index++;
 			}
 		}
+	}
+
+	bool	WebServer::current_pollfd_is(int event)
+	{
+		return (this->_pollfds[this->_current_pollfd_index].revents & event);
+	}
+
+	void	WebServer::set_current_pollfd_to(int event)
+	{
+		this->_pollfds[this->_current_pollfd_index].events = event;
+	}
+
+	void	WebServer::accept_connection(serverIterType server)
+	{
+		int	client_fd = server->second->accept_connection();
+		if (client_fd != -1)
+		{
+			Client*		new_client = new Client(*(server->second), client_fd);
+			pollFdType	new_pollfd;
+
+			new_pollfd.fd = client_fd;
+			new_pollfd.events = POLLIN;
+			this->_pollfds.push_back(new_pollfd);
+			this->_clients.push_back(new_client);
+		}
+	}
+
+	WebServer::clientIterType	WebServer::close_connection(clientIterType client)
+	{
+		close(this->_pollfds[this->_current_pollfd_index].fd);
+		this->_pollfds.erase(this->_pollfds.begin() + this->_current_pollfd_index--);
+		delete *client;
+		return (this->_clients.erase(client) - 1);
 	}
 }

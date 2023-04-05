@@ -1,7 +1,6 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-# include <iostream>
 # include "../Servers/SimpleServer.hpp"
 # include "Request.hpp"
 # include "Response.hpp"

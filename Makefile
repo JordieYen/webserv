@@ -24,7 +24,7 @@ $(NAME):	$(OBJS_FILES)
 
 test:	$(OBJS_FILES)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES)
-	@./$(NAME) $(ARG)
+	@./$(NAME) $(ARG) tests/test.conf
 
 sanitize:	$(OBJS_FILES)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS_FILES) $(FSAN)

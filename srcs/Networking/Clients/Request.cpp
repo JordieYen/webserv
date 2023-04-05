@@ -15,7 +15,7 @@ namespace	ft
 		int		read_bytes;
 		char*	buffer = static_cast<char*>(calloc(65536 * sizeof(char), sizeof(char)));
 
-		if ((read_bytes = recv(this->_client_fd, buffer, 65536, 0)) < 0)
+		if ((read_bytes = recv(this->_client_fd, buffer, 65536, 0)) <= 0)
 		{
 			this->_received = true;
 			std::cout << "Error : recv returns error..." << std::endl;
@@ -112,7 +112,6 @@ namespace	ft
 	{
 		try
 		{
-			this->_content_context.at(context);
 			return (this->_content_context.at(context) == value);
 		}
 		catch (const std::out_of_range& e) {}

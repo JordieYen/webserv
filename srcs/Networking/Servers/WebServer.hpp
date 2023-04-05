@@ -1,7 +1,7 @@
 #ifndef WEBSERVER_HPP
 # define WEBSERVER_HPP
 
-# include <iostream>
+// # include <iostream>
 # include <vector>
 # include <map>
 # include <poll.h>
@@ -22,20 +22,16 @@ namespace	ft
 	class WebServer
 	{
 		public:
-			typedef struct pollfd			pollFdType;
-			typedef map<int, SimpleServer*>	serverMapType;
-			typedef vector<Client*>			clientArrayType;
-			typedef vector<pollFdType>		pollFdArrayType;
+			typedef struct pollfd						pollFdType;
+			typedef map<int, SimpleServer*>				serverMapType;
+			typedef map<int, SimpleServer*>::iterator	serverIterType;
+			typedef vector<Client*>						clientArrayType;
+			typedef vector<Client*>::iterator			clientIterType;
+			typedef vector<pollFdType>					pollFdArrayType;
 
 			WebServer(void);
 			WebServer(string config_path);
 			~WebServer(void);
-
-			template <class T>
-			void	log(string desc, T value)
-			{
-				std::cout << desc << " : " << value << std::endl;
-			};
 
 			void	setup(void);
 			void	launch(void);
@@ -43,6 +39,9 @@ namespace	ft
 		private:
 			bool			current_pollfd_is(int event);
 			void			set_current_pollfd_to(int event);
+
+			void			accept_connection(serverIterType server);
+			clientIterType	close_connection(clientIterType client);
 
 			ConfigParser	_parser;
 			serverMapType	_servers;

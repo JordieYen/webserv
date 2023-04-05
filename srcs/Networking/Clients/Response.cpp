@@ -72,10 +72,8 @@ namespace ft
 		{
 			return (this->_config.get_location_directive(this->_closest_match, directive).front());
 		}
-		catch (const std::out_of_range &e)
-		{
-			return (this->_config.get_normal_directive(directive).front());
-		}
+		catch (const std::out_of_range &e) {}
+		return (this->_config.get_normal_directive(directive).front());
 	}
 
 	string Response::get_path_to_error(void)
@@ -247,6 +245,8 @@ namespace ft
 		{
 			if (this->_request->get_header("path").find(".ico") != string::npos)
 				header.append("Content-Type: image/x-icon\r\n");
+			else if (this->_request->get_header("path").find(".mp4") != string::npos)
+				header.append("Content-Type: video/mp4\r\n");
 			else
 				header.append("Content-Type: */*; charset=utf-8\r\n");
 			header.append("Content-Length: ");
@@ -260,6 +260,7 @@ namespace ft
 	void Response::send_to_client(void)
 	{
 		int length_to_send = this->_content.length();
+		
 		if (length_to_send <= 50000)
 			this->_sent = true;
 		else

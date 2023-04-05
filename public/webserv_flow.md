@@ -1,0 +1,41 @@
+# Webserv Flow
+- index | login / homepage
+	- server-side handling
+		- cookie in request header exists
+			- if cookie doesn't exist in `map<cookie, username>`
+			- or if cookie has expired
+				- call CGI handler without anything
+			- call CGI handler with `username`
+		- no username in request (GET)
+			- call CGI handler without anything
+		- username doesn't exist
+			- generate hash from password
+			- add user to `map<username, hash>`
+			- generate cookie
+			- add cookie to `map<cookie, username>`
+			- create directory `public/users/username`
+			- call CGI handler with `username`
+		- username exists
+			- if password hash doesn't match
+				- proceed to wrong password / try again html
+			- call CGI handler with `username`
+	- python CGI
+		- if `username` argument is empty
+			- read index from `index.html`
+		- if `username` argument isn't empty
+			- dynamically generate html based on `homepage.html`
+				- titles of background / window headers are `username`
+				- get list of files in directory `public/users/username`
+				- an icon for each file in background and finder
+				- all paths of POST / DELETE requests are `/users/username`
+		- write everything to STDIN with `print`
+- server-side CGI handling
+	- create a pipe for reading / writing with `pipe`
+	- create a child process for CGI with `fork`
+	- when in child process
+		- setup default arguments for `execve`
+		- execute CGI with additional argument `username`
+	- when in parent process
+		- swap write end of pipe to STDIN with `dup2`
+		- read and save output of CGI from read end of pipe
+		- send content to client as usual

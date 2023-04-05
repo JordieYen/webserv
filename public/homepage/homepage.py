@@ -29,6 +29,8 @@ def generate_homepage(full_path):
 		for line in homepage:
 			if line.startswith("\t\t\t\tbackground-image: url('eulee_background.jpg');") and os.environ.get("USERNAME") == "jking-ye":
 				line = "\t\t\t\tbackground-image: url('marin_black.png');"
+			if line.startswith("\t\t\t\tbackground-image: url('eulee_background.jpg');") and os.environ.get("USERNAME") == "hyun-zhe":
+				line = "\t\t\t\tbackground-image: url('mac_background.jpg');"
 			if line.startswith("\t\t\t\twindow.location.href"):
 				line = line[:28] + "/" + full_path + line[28:]
 			if line.startswith("\t\t\t\t\tfetch('/' + file"):
@@ -39,6 +41,8 @@ def generate_homepage(full_path):
 				line = line[:-5] + dt.now().strftime("%a %H:%M") + "</p>\n"
 			if line.startswith("\t\t\t<div class=\"table\">"):
 				line += append_icons(full_path, False)
+			if line.startswith("\t\t\t\t\t<p class=\"window_header_title\">"):
+				line += line[:36] + full_path[9:] + "</p>\n"
 			if line.startswith("\t\t\t\t<div class=\"table\" id=\"window_table\">"):
 				line += append_icons(full_path, True)
 			print(line, end = '')

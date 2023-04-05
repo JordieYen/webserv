@@ -33,6 +33,10 @@ namespace	ft
 			Response(SimpleServer& server, Request* request);
 			~Response(void);
 
+			void	handle_methods(void);
+			bool	sent(void);
+
+		private:
 			bool	path_is_valid_file(string path);
 
 			string	get_string_from_numeral(int	input);
@@ -57,18 +61,13 @@ namespace	ft
 
 			bool	check_error(void);
 			void	handle_error(void);
-
 			bool	check_cgi(void);
 			void	handle_cgi(void);
 
 			void	handle_get(void);
 			void	handle_post(void);
 			void	handle_delete(void);
-			void	handle_methods(void);
 
-			bool	sent(void);
-
-		private:
 			SimpleServer&	_server;
 			ServerConfig&	_config;
 			Request*		_request;
