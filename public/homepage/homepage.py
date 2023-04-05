@@ -27,6 +27,8 @@ def	append_icons(full_path, is_window):
 def generate_homepage(full_path):
 	with open("homepage.html") as homepage:
 		for line in homepage:
+			if line.startswith("\t\t\t\tbackground-image: url('eulee_background.jpg');") and os.environ.get("USERNAME") == "jking-ye":
+				line = "\t\t\t\tbackground-image: url('marin_black.png');"
 			if line.startswith("\t\t\t\twindow.location.href"):
 				line = line[:28] + "/" + full_path + line[28:]
 			if line.startswith("\t\t\t\t\tfetch('/' + file"):
